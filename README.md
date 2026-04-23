@@ -4,6 +4,8 @@
 
 Sympli RSS Fusion est une application PHP auto-hébergeable pour fusionner plusieurs flux RSS/Atom en un flux master unique.
 
+Démo en ligne: https://sympli.rss-fusion.com/
+
 ## Approche KISS
 
 Le projet reste volontairement simple: un front controller unique (`public/index.php`) et pas de dépendance Composer obligatoire.
@@ -93,6 +95,8 @@ Ensuite, ouvrez l'URL du domaine.
 ## EN
 
 Sympli RSS Fusion is a self-hosted PHP application that merges multiple RSS/Atom feeds into a single master feed.
+
+Live demo: https://sympli.rss-fusion.com/
 
 ### KISS approach
 

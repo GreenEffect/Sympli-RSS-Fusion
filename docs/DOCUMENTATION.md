@@ -4,6 +4,8 @@
 
 Projet: Sympli RSS Fusion
 
+Démo en ligne: https://sympli.rss-fusion.com/
+
 ## Architecture
 
 - Front controller: `public/index.php`
@@ -189,6 +191,8 @@ php -S 127.0.0.1:8080 -t public
 ---
 
 ## EN - Technical documentation (summary)
+
+Live demo: https://sympli.rss-fusion.com/
 
 ### Architecture
 
