@@ -32,6 +32,12 @@ $themeStylesheet = isset($themeStylesheet) && is_string($themeStylesheet) && $th
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title><?= htmlspecialchars($pageTitle) ?></title>
     <link rel="stylesheet" href="<?= htmlspecialchars($themeStylesheet) ?>">
+    <link rel="icon" type="image/png" href="/images/favicon/favicon-96x96.png" sizes="96x96" />
+    <link rel="icon" type="image/svg+xml" href="/images/favicon/favicon.svg" />
+    <link rel="shortcut icon" href="/images/favicon/favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/images/favicon/apple-touch-icon.png" />
+    <meta name="apple-mobile-web-app-title" content="Sympli RSS Fusion" />
+    <link rel="manifest" href="/images/favicon/site.webmanifest" />
 </head>
 <body>
 <div class="site-logo-wrap">
