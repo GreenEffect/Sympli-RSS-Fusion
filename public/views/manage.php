@@ -21,7 +21,9 @@
 $feedUrl = $appUrl . '/rss/' . $feed['token'];
 $deleteUrl = '/manage/' . $feed['token'] . '/delete';
 $exportUrl = '/manage/' . $feed['token'] . '/export';
+$exportOpmlUrl = '/manage/' . $feed['token'] . '/export-opml';
 $importUrl = '/manage/' . $feed['token'] . '/import';
+$importOpmlUrl = '/manage/' . $feed['token'] . '/import-opml';
 $pageTitle = $t('manage.page_title') . ' - ' . (string) $feed['title'];
 ?>
 <?php require __DIR__ . '/partials/head.php'; ?>
@@ -45,10 +47,16 @@ $pageTitle = $t('manage.page_title') . ' - ' . (string) $feed['title'];
 
         <div class="toolbar">
             <a class="btn" href="<?= htmlspecialchars($exportUrl) ?>"><?= htmlspecialchars($t('manage.export')) ?></a>
+            <a class="btn" href="<?= htmlspecialchars($exportOpmlUrl) ?>"><?= htmlspecialchars($t('manage.export_opml')) ?></a>
             <form method="post" action="<?= htmlspecialchars($importUrl) ?>" enctype="multipart/form-data" class="inline-import">
                 <input type="hidden" name="_csrf" value="<?= htmlspecialchars($csrfToken) ?>">
                 <input type="file" name="import_file" accept="application/json,.json" required>
                 <button type="submit" class="secondary"><?= htmlspecialchars($t('manage.import_button')) ?></button>
+            </form>
+            <form method="post" action="<?= htmlspecialchars($importOpmlUrl) ?>" enctype="multipart/form-data" class="inline-import">
+                <input type="hidden" name="_csrf" value="<?= htmlspecialchars($csrfToken) ?>">
+                <input type="file" name="import_opml_file" accept=".opml,text/x-opml,application/xml,text/xml" required>
+                <button type="submit" class="secondary"><?= htmlspecialchars($t('manage.import_opml_button')) ?></button>
             </form>
             <form method="post" action="<?= htmlspecialchars($deleteUrl) ?>" onsubmit="return confirm('<?= htmlspecialchars($t('manage.delete_confirm')) ?>');">
                 <input type="hidden" name="_csrf" value="<?= htmlspecialchars($csrfToken) ?>">

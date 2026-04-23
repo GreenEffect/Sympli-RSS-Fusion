@@ -33,6 +33,7 @@ final class App
 {
     private const VERSION_REMOTE_URL = 'https://raw.githubusercontent.com/GreenEffect/Sympli-RSS-Fusion/refs/heads/main/VERSION';
     private const VERSION_REPO_URL = 'https://github.com/GreenEffect/Sympli-RSS-Fusion';
+    private const OPML_MAX_BYTES = 1048576;
 
     private ?bool $versionUpdateAvailable = null;
 
@@ -72,8 +73,18 @@ final class App
             return;
         }
 
+        if ($path === '/import-master-opml' && $method === 'POST') {
+            $this->handleImportMasterOpml();
+            return;
+        }
+
         if ($path === '/export-master' && $method === 'GET') {
             $this->handleExportMaster();
+            return;
+        }
+
+        if ($path === '/export-master-opml' && $method === 'GET') {
+            $this->handleExportMasterOpml();
             return;
         }
 
@@ -97,8 +108,18 @@ final class App
             return;
         }
 
+        if (preg_match('#^/manage/([a-f0-9]{48})/export-opml$#', $path, $m) === 1 && $method === 'GET') {
+            $this->handleExportOpml($m[1]);
+            return;
+        }
+
         if (preg_match('#^/manage/([a-f0-9]{48})/import$#', $path, $m) === 1 && $method === 'POST') {
             $this->handleImport($m[1]);
+            return;
+        }
+
+        if (preg_match('#^/manage/([a-f0-9]{48})/import-opml$#', $path, $m) === 1 && $method === 'POST') {
+            $this->handleImportOpml($m[1]);
             return;
         }
 
@@ -271,9 +292,25 @@ final class App
         $this->streamExport($token);
     }
 
+    private function handleExportMasterOpml(): void
+    {
+        $token = $this->normalizeToken((string) ($_GET['token'] ?? ''));
+        if ($token === '') {
+            $this->renderHome($this->translator->t('error.master_token_required'));
+            return;
+        }
+
+        $this->streamExportOpml($token);
+    }
+
     private function handleExport(string $token): void
     {
         $this->streamExport($token);
+    }
+
+    private function handleExportOpml(string $token): void
+    {
+        $this->streamExportOpml($token);
     }
 
     private function streamExport(string $token): void
@@ -299,6 +336,20 @@ final class App
         echo $payload;
     }
 
+    private function streamExportOpml(string $token): void
+    {
+        $config = $this->repository->getExportableConfig($token);
+        if ($config === null) {
+            $this->renderErrorPage(404, $this->translator->t('error.feed_not_found'));
+            return;
+        }
+
+        $xml = $this->buildOpmlFromConfig($config);
+        header('Content-Type: text/x-opml; charset=utf-8');
+        header('Content-Disposition: attachment; filename="feed-config-' . $token . '.opml"');
+        echo $xml;
+    }
+
     private function handleImportMaster(): void
     {
         if (!$this->validateCsrfToken()) {
@@ -307,6 +358,23 @@ final class App
         }
 
         $config = $this->parseImportUpload($_FILES['import_master_file'] ?? null, $error);
+        if ($config === null) {
+            $this->renderHome($error ?? $this->translator->t('error.import_invalid_structure'));
+            return;
+        }
+
+        $token = $this->repository->createFeed($config['title'], $config['description'], $config['sources']);
+        header('Location: /manage/' . $token, true, 302);
+    }
+
+    private function handleImportMasterOpml(): void
+    {
+        if (!$this->validateCsrfToken()) {
+            $this->renderHome($this->translator->t('error.invalid_csrf'));
+            return;
+        }
+
+        $config = $this->parseOpmlUpload($_FILES['import_master_opml_file'] ?? null, $error);
         if ($config === null) {
             $this->renderHome($error ?? $this->translator->t('error.import_invalid_structure'));
             return;
@@ -337,6 +405,43 @@ final class App
 
         $this->cache->invalidate($token);
         $this->renderManage($token, null, $this->translator->t('flash.import_success'));
+    }
+
+    private function handleImportOpml(string $token): void
+    {
+        if (!$this->validateCsrfToken()) {
+            $this->renderManage($token, $this->translator->t('error.invalid_csrf'));
+            return;
+        }
+
+        $feed = $this->repository->findFeedByToken($token);
+        if ($feed === null) {
+            $this->renderHome($this->translator->t('error.feed_not_found'));
+            return;
+        }
+
+        $config = $this->parseOpmlUpload($_FILES['import_opml_file'] ?? null, $error);
+        if ($config === null) {
+            $this->renderManage($token, $error ?? $this->translator->t('error.import_invalid_structure'));
+            return;
+        }
+
+        $existingSources = is_array($feed['sources'] ?? null) ? $feed['sources'] : [];
+        $sources = $this->mergeSourcesByUrl($existingSources, $config['sources']);
+
+        $ok = $this->repository->updateFeedByToken(
+            $token,
+            (string) $feed['title'],
+            (string) $feed['description'],
+            $sources
+        );
+        if (!$ok) {
+            $this->renderHome($this->translator->t('error.feed_not_found'));
+            return;
+        }
+
+        $this->cache->invalidate($token);
+        $this->renderManage($token, null, $this->translator->t('flash.opml_sources_added'));
     }
 
     private function renderRss(string $token): void
@@ -527,6 +632,236 @@ final class App
             'description' => $description,
             'sources' => $sources,
         ];
+    }
+
+    /**
+     * @param mixed $file
+     * @param string|null $error
+     * @return array{title:string,description:string,sources:array<int, array<string,mixed>>}|null
+     */
+    private function parseOpmlUpload(mixed $file, ?string &$error = null): ?array
+    {
+        if (!is_array($file) || ($file['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_OK) {
+            $error = $this->translator->t('error.import_upload');
+            return null;
+        }
+
+        $tmpPath = (string) ($file['tmp_name'] ?? '');
+        if ($tmpPath === '' || !is_file($tmpPath)) {
+            $error = $this->translator->t('error.import_upload');
+            return null;
+        }
+
+        if ((int) ($file['size'] ?? 0) > self::OPML_MAX_BYTES) {
+            $error = $this->translator->t('error.opml_too_large');
+            return null;
+        }
+
+        $raw = file_get_contents($tmpPath);
+        if (!is_string($raw) || trim($raw) === '') {
+            $error = $this->translator->t('error.opml_invalid');
+            return null;
+        }
+
+        libxml_use_internal_errors(true);
+        $dom = new \DOMDocument('1.0', 'UTF-8');
+        $loaded = $dom->loadXML($raw, LIBXML_NONET | LIBXML_NOERROR | LIBXML_NOWARNING | LIBXML_NOBLANKS);
+        libxml_clear_errors();
+
+        if (!$loaded) {
+            $error = $this->translator->t('error.opml_invalid');
+            return null;
+        }
+
+        $outlines = $dom->getElementsByTagName('outline');
+        $sources = [];
+        $seen = [];
+
+        foreach ($outlines as $outline) {
+            if (!$outline instanceof \DOMElement) {
+                continue;
+            }
+
+            $url = trim((string) $outline->getAttribute('xmlUrl'));
+            if ($url === '') {
+                $url = trim((string) $outline->getAttribute('url'));
+            }
+
+            if ($url === '' || !filter_var($url, FILTER_VALIDATE_URL)) {
+                continue;
+            }
+
+            $urlKey = $this->normalizeUrlKey($url);
+            if (isset($seen[$urlKey])) {
+                continue;
+            }
+
+            $name = trim((string) $outline->getAttribute('title'));
+            if ($name === '') {
+                $name = trim((string) $outline->getAttribute('text'));
+            }
+            if ($name === '') {
+                $name = $this->sourceNameFromUrl($url);
+            }
+
+            $sources[] = [
+                'name' => $name,
+                'url' => $url,
+                'black_words' => '',
+                'star_words' => '',
+                'black_target_title' => 0,
+                'black_target_description' => 0,
+                'black_target_content' => 0,
+                'star_target_title' => 0,
+                'star_target_description' => 0,
+                'star_target_content' => 0,
+            ];
+            $seen[$urlKey] = true;
+        }
+
+        if ($sources === []) {
+            $error = $this->translator->t('error.opml_no_sources');
+            return null;
+        }
+
+        $title = $this->translator->t('opml.default_title');
+        $heads = $dom->getElementsByTagName('head');
+        if ($heads->length > 0) {
+            $head = $heads->item(0);
+            if ($head instanceof \DOMElement) {
+                foreach ($head->childNodes as $node) {
+                    if ($node instanceof \DOMElement && strtolower($node->tagName) === 'title') {
+                        $candidate = trim((string) $node->textContent);
+                        if ($candidate !== '') {
+                            $title = $candidate;
+                        }
+                        break;
+                    }
+                }
+            }
+        }
+
+        return [
+            'title' => $title,
+            'description' => '',
+            'sources' => $sources,
+        ];
+    }
+
+    /**
+     * @param array<string, mixed> $config
+     */
+    private function buildOpmlFromConfig(array $config): string
+    {
+        $title = trim((string) ($config['title'] ?? ''));
+        if ($title === '') {
+            $title = $this->translator->t('opml.default_title');
+        }
+
+        $dom = new \DOMDocument('1.0', 'UTF-8');
+        $dom->formatOutput = true;
+
+        $opml = $dom->createElement('opml');
+        $opml->setAttribute('version', '2.0');
+        $dom->appendChild($opml);
+
+        $head = $dom->createElement('head');
+        $head->appendChild($dom->createElement('title', $title));
+        $head->appendChild($dom->createElement('dateCreated', gmdate(DATE_RSS)));
+        $opml->appendChild($head);
+
+        $body = $dom->createElement('body');
+        $opml->appendChild($body);
+
+        $sources = $config['sources'] ?? [];
+        if (is_array($sources)) {
+            foreach ($sources as $source) {
+                if (!is_array($source)) {
+                    continue;
+                }
+
+                $url = trim((string) ($source['url'] ?? ''));
+                if ($url === '' || !filter_var($url, FILTER_VALIDATE_URL)) {
+                    continue;
+                }
+
+                $name = trim((string) ($source['name'] ?? ''));
+                if ($name === '') {
+                    $name = $this->sourceNameFromUrl($url);
+                }
+
+                $outline = $dom->createElement('outline');
+                $outline->setAttribute('text', $name);
+                $outline->setAttribute('title', $name);
+                $outline->setAttribute('type', 'rss');
+                $outline->setAttribute('xmlUrl', $url);
+                $body->appendChild($outline);
+            }
+        }
+
+        $xml = $dom->saveXML();
+        return is_string($xml) ? $xml : '';
+    }
+
+    /**
+     * @param array<int, array<string, mixed>> $existing
+     * @param array<int, array<string, mixed>> $added
+     * @return array<int, array<string, mixed>>
+     */
+    private function mergeSourcesByUrl(array $existing, array $added): array
+    {
+        $merged = [];
+        $seen = [];
+
+        foreach ([$existing, $added] as $list) {
+            foreach ($list as $source) {
+                if (!is_array($source)) {
+                    continue;
+                }
+
+                $url = trim((string) ($source['url'] ?? ''));
+                if ($url === '' || !filter_var($url, FILTER_VALIDATE_URL)) {
+                    continue;
+                }
+
+                $key = $this->normalizeUrlKey($url);
+                if (isset($seen[$key])) {
+                    continue;
+                }
+
+                $merged[] = [
+                    'name' => trim((string) ($source['name'] ?? '')) ?: $this->sourceNameFromUrl($url),
+                    'url' => $url,
+                    'black_words' => trim((string) ($source['black_words'] ?? '')),
+                    'star_words' => trim((string) ($source['star_words'] ?? '')),
+                    'black_target_title' => !empty($source['black_target_title']) ? 1 : 0,
+                    'black_target_description' => !empty($source['black_target_description']) ? 1 : 0,
+                    'black_target_content' => !empty($source['black_target_content']) ? 1 : 0,
+                    'star_target_title' => !empty($source['star_target_title']) ? 1 : 0,
+                    'star_target_description' => !empty($source['star_target_description']) ? 1 : 0,
+                    'star_target_content' => !empty($source['star_target_content']) ? 1 : 0,
+                ];
+                $seen[$key] = true;
+            }
+        }
+
+        return $merged;
+    }
+
+    private function sourceNameFromUrl(string $url): string
+    {
+        $host = parse_url($url, PHP_URL_HOST);
+        if (is_string($host) && $host !== '') {
+            return $host;
+        }
+
+        return 'RSS source';
+    }
+
+    private function normalizeUrlKey(string $url): string
+    {
+        $url = trim($url);
+        return strtolower(rtrim($url, '/'));
     }
 
     private function normalizeToken(string $raw): string

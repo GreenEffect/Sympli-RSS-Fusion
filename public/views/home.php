@@ -53,11 +53,24 @@ $pageTitle = $appName;
                         <input type="file" name="import_master_file" accept="application/json,.json" required>
                         <button type="submit"><?= htmlspecialchars($t('home.options_import_button')) ?></button>
                     </form>
+                    <form method="post" action="/import-master-opml" enctype="multipart/form-data" class="options-form">
+                        <input type="hidden" name="_csrf" value="<?= htmlspecialchars($csrfToken) ?>">
+                        <h3><?= htmlspecialchars($t('home.options_import_opml_title')) ?></h3>
+                        <p class="muted"><?= htmlspecialchars($t('home.options_import_opml_text')) ?></p>
+                        <input type="file" name="import_master_opml_file" accept=".opml,text/x-opml,application/xml,text/xml" required>
+                        <button type="submit"><?= htmlspecialchars($t('home.options_import_opml_button')) ?></button>
+                    </form>
                     <form method="get" action="/export-master" class="options-form">
                         <h3><?= htmlspecialchars($t('home.options_export_title')) ?></h3>
                         <p class="muted"><?= htmlspecialchars($t('home.options_export_text')) ?></p>
                         <input name="token" type="text" placeholder="<?= htmlspecialchars($t('home.open_existing_placeholder')) ?>" required>
                         <button type="submit" class="secondary"><?= htmlspecialchars($t('home.options_export_button')) ?></button>
+                    </form>
+                    <form method="get" action="/export-master-opml" class="options-form">
+                        <h3><?= htmlspecialchars($t('home.options_export_opml_title')) ?></h3>
+                        <p class="muted"><?= htmlspecialchars($t('home.options_export_opml_text')) ?></p>
+                        <input name="token" type="text" placeholder="<?= htmlspecialchars($t('home.open_existing_placeholder')) ?>" required>
+                        <button type="submit" class="secondary"><?= htmlspecialchars($t('home.options_export_opml_button')) ?></button>
                     </form>
                 </div>
             </div>

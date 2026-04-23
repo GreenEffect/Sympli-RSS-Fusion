@@ -178,6 +178,13 @@ Si vous avez déjà un serveur web opérationnel, le chemin le plus simple est:
 4. Le cache XML est créé dans `var/cache` après lecture du RSS.
 5. Les fichiers `.env` et `src/` ne sont pas accessibles via le navigateur.
 
+Routes import/export disponibles en plus du JSON:
+
+- `POST /import-master-opml`
+- `GET /export-master-opml?token=...`
+- `GET /manage/{token}/export-opml`
+- `POST /manage/{token}/import-opml`
+
 ---
 
 ## EN - Full setup
@@ -356,3 +363,10 @@ If you already have a working web server, the quickest path is:
 3. SQLite file exists in `var/data`.
 4. XML cache appears in `var/cache` after RSS access.
 5. `.env` and `src/` are not directly reachable from browser.
+
+Additional import/export routes available (besides JSON):
+
+- `POST /import-master-opml`
+- `GET /export-master-opml?token=...`
+- `GET /manage/{token}/export-opml`
+- `POST /manage/{token}/import-opml`
