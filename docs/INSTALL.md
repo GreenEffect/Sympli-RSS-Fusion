@@ -71,7 +71,7 @@ Configuration importante:
 - `VERSION_CHECK_ENABLED=0` (désactivé par défaut)
   - passer à `1` pour activer la vérification de nouvelle version GitHub.
 
-### 5. Démarrer l'application (local)
+### ▶️ 5. Démarrer l'application (local)
 
 ```bash
 php -S 127.0.0.1:8080 -t public
@@ -99,7 +99,7 @@ Aucune étape Composer n'est requise.
 - Le cache XML apparaît dans `var/cache` après consultation d'un RSS.
 - En mode `dev`, les erreurs détaillées sont visibles et les logs sont alimentés.
 
-### 8. Mise en production (résumé)
+### 🌐 8. Mise en production (résumé)
 
 - Configurer votre serveur web avec `public/` comme document root.
 - Configurer une vraie `APP_URL` (HTTPS recommandé).
@@ -154,7 +154,7 @@ Si vous avez déjà un serveur web opérationnel, le chemin le plus simple est:
 - éditer `APP_URL` dans `.env` avec l'URL publique de votre instance,
 - ouvrir cette URL dans votre navigateur :)
 
-### 9. Dépannage
+### 🛠️ 9. Dépannage
 
 - `Class not found`:
   - vérifier que `src/autoload.php` est présent et chargé par `public/index.php`.
@@ -170,7 +170,7 @@ Si vous avez déjà un serveur web opérationnel, le chemin le plus simple est:
   - si l'hébergeur impose `public_html`, utiliser un lien symbolique `public_html -> .../Sympli-RSS-Fusion/public` quand disponible,
   - éviter d'exposer la racine du dépôt directement sur le web.
 
-### 10. Checklist de validation post-install
+### ✅ 10. Checklist de validation post-install
 
 1. La page `/` répond sans erreur 500.
 2. La création d'un flux produit une URL `/rss/{token}` valide.
@@ -250,7 +250,7 @@ Important values:
 - `VERSION_CHECK_ENABLED=0` (disabled by default)
   - set to `1` to enable remote version checks from GitHub.
 
-### 5. Start application
+### ▶️ 5. Start application
 
 ```bash
 php -S 127.0.0.1:8080 -t public
@@ -278,7 +278,7 @@ No Composer step is needed.
 - XML cache files appear in `var/cache` after RSS access.
 - In `dev` mode, detailed errors are displayed and logs are written.
 
-### 8. Production quick notes
+### 🌐 8. Production quick notes
 
 - Configure your web server with `public/` as document root.
 - Set a real `APP_URL` (HTTPS recommended).
@@ -333,7 +333,7 @@ If you already have a working web server, the quickest path is:
 - update `APP_URL` in `.env` with your public instance URL,
 - open that URL in your browser :)
 
-### 9. Troubleshooting
+### 🛠️ 9. Troubleshooting
 
 - `Class not found`:
   - ensure `src/autoload.php` exists and is required by `public/index.php`.
@@ -349,7 +349,7 @@ If you already have a working web server, the quickest path is:
   - if host enforces `public_html`, use a symlink `public_html -> .../Sympli-RSS-Fusion/public` when available,
   - avoid exposing repository root directly on the web.
 
-### 10. Post-install validation checklist
+### ✅ 10. Post-install validation checklist
 
 1. `/` loads without 500 errors.
 2. Creating a feed returns a working `/rss/{token}` URL.

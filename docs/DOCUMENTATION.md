@@ -6,7 +6,7 @@ Projet: Sympli RSS Fusion
 
 Démo en ligne: https://sympli.rss-fusion.com/
 
-## Architecture
+## 🏗️ Architecture
 
 - Front controller: `public/index.php`
 - Routeur HTTP: `RssFusionKiss\Http\App`
@@ -18,7 +18,7 @@ Démo en ligne: https://sympli.rss-fusion.com/
 - Cache XML: `RssFusionKiss\Service\CacheService`
 - I18n JSON: `RssFusionKiss\I18n\Translator`
 
-## Choix de racine web
+## 🔒 Choix de racine web
 
 La racine web doit cibler `public/`.
 
@@ -29,7 +29,7 @@ Ce choix garde hors exposition HTTP les éléments sensibles du projet:
 - logs dans `var/log`,
 - code applicatif dans `src`.
 
-## Routes
+## 🛣️ Routes
 
 - `GET /`: interface création + ouverture d'un flux existant.
 - `POST /create`: création d'un flux.
@@ -59,7 +59,7 @@ Aucun compte n'est requis. Le token (48 chars hex) est la clé d'accès.
 - Token difficilement devinable.
 - Toute personne ayant le lien peut consommer/modifier/supprimer le flux (choix produit assumé).
 
-## Auto-installation
+## ⚙️ Auto-installation
 
 À chaque démarrage via `public/index.php`:
 
@@ -148,7 +148,7 @@ Zones ciblées:
 - Thèmes fournis: `default`, `basic`, `dashboard`, `tiles`.
 - Fallback automatique sur `default`.
 
-## Vérification de version
+## 🔄 Vérification de version
 
 Config `.env`:
 
@@ -165,7 +165,7 @@ Comportement:
 - lien de la mention vers le dépôt GitHub:
   - `https://github.com/GreenEffect/Sympli-RSS-Fusion`.
 
-## Exploitation
+## 🧪 Exploitation
 
 ### Démarrage local
 
@@ -194,7 +194,7 @@ php -S 127.0.0.1:8080 -t public
 
 Live demo: https://sympli.rss-fusion.com/
 
-### Architecture
+### 🏗️ Architecture
 
 - Front controller: `public/index.php`
 - HTTP router: `RssFusionKiss\Http\App`
@@ -206,11 +206,11 @@ Live demo: https://sympli.rss-fusion.com/
 - XML cache: `RssFusionKiss\Service\CacheService`
 - JSON i18n: `RssFusionKiss\I18n\Translator`
 
-### Web root
+### 🔒 Web root
 
 Web root must target `public/` to keep sensitive files out of direct HTTP access (`.env`, `var/data`, `var/log`, `src`).
 
-### Main routes
+### 🛣️ Main routes
 
 - `GET /`, `POST /create`, `POST /import-master`
 - `GET /export-master?token=...`
@@ -228,14 +228,14 @@ Web root must target `public/` to keep sensitive files out of direct HTTP access
 - Access is based on an unguessable 48-char hex token.
 - Token generation uses `random_bytes(24)`.
 
-### Runtime behavior
+### ⚙️ Runtime behavior
 
 - Auto-installs on first request (`.env`, folders, SQLite schema).
 - `dev` mode enables detailed errors and dedicated DB/logging.
 - Optional auto-prune for inactive feeds.
 - XML cache invalidation on TTL expiry and feed changes.
 
-### Version check
+### 🔄 Version check
 
 When enabled with `VERSION_CHECK_ENABLED=1`, the app compares local `VERSION` with:
 
@@ -243,7 +243,7 @@ When enabled with `VERSION_CHECK_ENABLED=1`, the app compares local `VERSION` wi
 
 and shows an update notice in footer if remote version is newer.
 
-### Production notes
+### 🌐 Production notes
 
 - Expose `public/` as document root.
 - Configure `APP_URL` with public URL.

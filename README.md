@@ -6,14 +6,14 @@ Sympli RSS Fusion est une application PHP auto-hébergeable pour fusionner plusi
 
 Démo en ligne: https://sympli.rss-fusion.com/
 
-## Approche KISS
+## 🧩 Approche KISS
 
 Le projet reste volontairement simple: un front controller unique (`public/index.php`) et pas de dépendance Composer obligatoire.
 
 Le webroot doit pointer sur `public/`.
 Ce choix protège automatiquement les fichiers sensibles hors web (`.env`, `var/data` SQLite, logs, source PHP).
 
-## Fonctionnalités
+## ✨ Fonctionnalités
 
 - Fusion de plusieurs sources RSS/Atom dans un flux master.
 - Filtres par source: black words et star words (titre/description/contenu).
@@ -27,7 +27,7 @@ Ce choix protège automatiquement les fichiers sensibles hors web (`.env`, `var/
 - Pages d'erreur 404/500 + page Données personnelles.
 - Vérification optionnelle de version distante avec alerte de mise à jour dans le footer.
 
-## Installation rapide
+## 🚀 Installation rapide
 
 ```bash
 cp .env.example .env
@@ -36,7 +36,7 @@ php -S 127.0.0.1:8080 -t public
 
 Puis ouvrir `http://127.0.0.1:8080`.
 
-## Installation ultra rapide
+## ⚡ Installation ultra rapide
 
 Déjà un serveur web ?
 Déposez les fichiers du projet puis pointez la racine web vers le dossier `public`.
@@ -51,7 +51,7 @@ cp .env.example .env
 
 Ensuite, ouvrez l'URL du domaine.
 
-## Configuration .env
+## ⚙️ Configuration .env
 
 - `APP_NAME`: nom du projet (par défaut `Sympli RSS Fusion`).
 - `APP_URL`: URL publique.
@@ -66,7 +66,7 @@ Ensuite, ouvrez l'URL du domaine.
 - `PREVIEW_ITEMS`.
 - `VERSION_CHECK_ENABLED`: `1` pour activer la vérification de version distante (désactivé par défaut).
 
-## Routes
+## 🛣️ Routes
 
 - `GET /`
 - `POST /create`
@@ -81,7 +81,7 @@ Ensuite, ouvrez l'URL du domaine.
 - `GET /rss/{token}`
 - `GET /privacy`
 
-## Documentation projet
+## 📚 Documentation projet
 
 - Installation détaillée: `docs/INSTALL.md`
 - Technique: `docs/DOCUMENTATION.md`
@@ -98,14 +98,14 @@ Sympli RSS Fusion is a self-hosted PHP application that merges multiple RSS/Atom
 
 Live demo: https://sympli.rss-fusion.com/
 
-### KISS approach
+### 🧩 KISS approach
 
 The project is intentionally simple: one front controller (`public/index.php`) and no mandatory Composer dependency.
 
 The webroot must point to `public/`.
 This protects sensitive files from direct web access (`.env`, SQLite data in `var/data`, logs, PHP source).
 
-### Features
+### ✨ Features
 
 - Merge multiple RSS/Atom sources into one master feed.
 - Per-source filters: black words and star words (title/description/content).
@@ -119,7 +119,7 @@ This protects sensitive files from direct web access (`.env`, SQLite data in `va
 - Dedicated 404/500 pages + Personal data page.
 - Optional remote version check with footer alert.
 
-### Quick install
+### 🚀 Quick install
 
 ```bash
 cp .env.example .env
@@ -128,7 +128,7 @@ php -S 127.0.0.1:8080 -t public
 
 Then open `http://127.0.0.1:8080`.
 
-### Fast server setup
+### ⚡ Fast server setup
 
 Already running a web server?
 Deploy project files and point your webroot to `public`.
@@ -137,7 +137,7 @@ Deploy project files and point your webroot to `public`.
 - Nginx: `root /path/to/Sympli-RSS-Fusion/public;`
 - Shared hosting: set your domain document root to `.../public`
 
-### .env configuration
+### ⚙️ .env configuration
 
 - `APP_NAME`: project name (default `Sympli RSS Fusion`).
 - `APP_URL`: public URL.
@@ -152,7 +152,7 @@ Deploy project files and point your webroot to `public`.
 - `PREVIEW_ITEMS`.
 - `VERSION_CHECK_ENABLED`: set `1` to enable remote version checks.
 
-### Routes
+### 🛣️ Routes
 
 - `GET /`
 - `POST /create`
@@ -167,7 +167,7 @@ Deploy project files and point your webroot to `public`.
 - `GET /rss/{token}`
 - `GET /privacy`
 
-### Project documentation
+### 📚 Project documentation
 
 - Installation: `docs/INSTALL.md`
 - Technical: `docs/DOCUMENTATION.md`
