@@ -1,20 +1,20 @@
 # Sympli RSS Fusion
 
-Sympli RSS Fusion est une application PHP auto-hebergeable pour fusionner plusieurs flux RSS/Atom en un flux master unique, sans Composer.
+Sympli RSS Fusion est une application PHP auto-hébergeable pour fusionner plusieurs flux RSS/Atom en un flux master unique.
 
-## Fonctionnalites
+## Fonctionnalités
 
 - Fusion de plusieurs sources RSS/Atom dans un flux master.
 - Filtres par source: black words et star words (titre/description/contenu).
-- Previsualisation source avec prise en compte immediate des regles de filtrage.
-- Import/export JSON depuis la page d'entree et la page de gestion.
+- Prévisualisation source avec prise en compte immédiate des règles de filtrage.
+- Import/export JSON depuis la page d'entrée et la page de gestion.
 - Suppression manuelle d'un flux depuis l'UI.
 - Suppression automatique optionnelle des flux inactifs.
 - Interface multilingue FR/EN extensible via JSON.
 - Themes configurables: `default`, `basic`, `dashboard`, `tiles`.
-- Mode `dev` (erreurs detaillees, logs, DB dediee).
-- Pages d'erreur 404/500 + page Donnees personnelles.
-- Verification optionnelle de version distante avec alerte de mise a jour dans le footer.
+- Mode `dev` (erreurs détaillées, logs, DB dédiée).
+- Pages d'erreur 404/500 + page Données personnelles.
+- Vérification optionnelle de version distante avec alerte de mise à jour dans le footer.
 
 ## Installation rapide
 
@@ -25,12 +25,23 @@ php -S 127.0.0.1:8080 -t public
 
 Puis ouvrir `http://127.0.0.1:8080`.
 
+## Installation ultra rapide
+
+Déjà un serveur web ? 
+Déposez les fichiers dans votre répertoire. Paramétrez votre serveur pour pointer sur le répertoire `public`.
+
+```bash
+cp .env.example .env
+```
+
+Enjoy !
+
 ## Configuration .env
 
-- `APP_NAME`: nom du projet (par defaut `Sympli RSS Fusion`).
+- `APP_NAME`: nom du projet (par défaut `Sympli RSS Fusion`).
 - `APP_URL`: URL publique.
 - `APP_LANG`: `fr` ou `en` (ou autre JSON dans `config/lang`).
-- `APP_THEME`: `default`, `basic`, `dashboard`, `tiles` (ou theme custom).
+- `APP_THEME`: `default`, `basic`, `dashboard`, `tiles` (ou thème custom).
 - `APP_ENV`: `prod` ou `dev`.
 - `DB_PATH`: base SQLite prod.
 - `DB_PATH_DEV`: base SQLite dev.
@@ -38,7 +49,7 @@ Puis ouvrir `http://127.0.0.1:8080`.
 - `CACHE_DIR`, `CACHE_TTL`, `HTTP_TIMEOUT`, `MAX_ITEMS`.
 - `AUTO_PRUNE_ENABLED`, `AUTO_PRUNE_DAYS`.
 - `PREVIEW_ITEMS`.
-- `VERSION_CHECK_ENABLED`: `1` pour activer la verification de version distante (desactive par defaut).
+- `VERSION_CHECK_ENABLED`: `1` pour activer la vérification de version distante (désactivé par défaut).
 
 ## Routes
 
@@ -57,10 +68,10 @@ Puis ouvrir `http://127.0.0.1:8080`.
 
 ## Documentation projet
 
-- Installation detaillee: `docs/INSTALL.md`
+- Installation détaillée: `docs/INSTALL.md`
 - Technique: `docs/DOCUMENTATION.md`
-- Donnees personnelles: `PERSONAL_DATA.md`
+- Données personnelles: `PERSONAL_DATA.md`
 - Contribuer: `CONTRIBUTING.md`
 - Code de conduite: `CODE_OF_CONDUCT.md`
-- Securite: `SECURITY.md`
+- Sécurité: `SECURITY.md`
 - Historique: `CHANGELOG.md`

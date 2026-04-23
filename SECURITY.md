@@ -1,24 +1,18 @@
 # Security Policy
 
-## Versions supportees
+## Versions supportées
 
 La branche principale est maintenue en priorite.
 
-## Signaler une vulnerabilite
+## Signaler une vulnérabilité
 
-Merci de ne pas ouvrir d'issue publique pour une faille de securite.
+Merci de ne pas ouvrir d'issue publique pour une faille de sécurité.
 
-Envoyer un email a: contact@green-effect.fr
+Envoyer un email à: contact@green-effect.fr
 
 Informations utiles:
 
 - Description de la faille
-- Etapes de reproduction
-- Impact estime
-- Version/commit concerne
-
-## Delais cibles
-
-- Accuse de reception: 72h
-- Premiere evaluation: 7 jours ouvres
-- Correctif: selon severite et complexite
+- Étapes de reproduction
+- Impact estimé
+- Version/commit concerné

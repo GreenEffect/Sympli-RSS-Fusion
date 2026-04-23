@@ -6,28 +6,28 @@ Projet: Sympli RSS Fusion
 
 - Front controller: `public/index.php`
 - Routeur HTTP: `RssFusionKiss\Http\App`
-- Installateur idempotent (auto au premier acces): `RssFusionKiss\Installer`
+- Installateur idempotent (auto au premier accès): `RssFusionKiss\Installer`
 - Logger erreur: `RssFusionKiss\Support\Logger`
 - Persistance SQLite: `RssFusionKiss\Persistence\*`
 - Aggregation: `RssFusionKiss\Service\FeedAggregator`
-- Recuperation/parsing des feeds + preview: `RssFusionKiss\Service\FeedFetcher`
+- Récupération/parsing des feeds + preview: `RssFusionKiss\Service\FeedFetcher`
 - Cache XML: `RssFusionKiss\Service\CacheService`
 - I18n JSON: `RssFusionKiss\I18n\Translator`
 
 ## Routes
 
-- `GET /`: interface creation + ouverture d'un flux existant.
-- `POST /create`: creation d'un flux.
+- `GET /`: interface création + ouverture d'un flux existant.
+- `POST /create`: création d'un flux.
 - `POST /import-master`: import JSON d'un nouveau flux master.
-- `GET /export-master?token=...`: export JSON d'un flux master depuis la page d'entree.
-- `GET /manage/{token}`: edition d'un flux.
-- `POST /manage/{token}`: sauvegarde de l'edition.
+- `GET /export-master?token=...`: export JSON d'un flux master depuis la page d'entrée.
+- `GET /manage/{token}`: édition d'un flux.
+- `POST /manage/{token}`: sauvegarde de l'édition.
 - `POST /manage/{token}/delete`: suppression d'un flux.
 - `GET /manage/{token}/export`: export JSON de configuration.
 - `POST /manage/{token}/import`: import JSON de configuration.
-- `GET /preview-source?url=...`: mini parseur pour previsualiser une source.
+- `GET /preview-source?url=...`: mini parseur pour prévisualiser une source.
 - `GET /rss/{token}`: sortie RSS XML.
-- `GET /privacy`: page de transparence sur les donnees personnelles.
+- `GET /privacy`: page de transparence sur les données personnelles.
 
 Pages d'erreur:
 
@@ -36,23 +36,23 @@ Pages d'erreur:
 
 ## Mode ouvert
 
-Aucun compte n'est requis. Le token (48 chars hex) est la cle d'acces.
+Aucun compte n'est requis. Le token (48 chars hex) est la clé d'accès.
 
-## Securite du lien unique
+## Sécurité du lien unique
 
-- Token genere via `random_bytes(24)`.
+- Token généré via `random_bytes(24)`.
 - Token difficilement devinable.
-- Toute personne ayant le lien peut consommer/modifier/supprimer le flux (choix produit assume).
+- Toute personne ayant le lien peut consommer/modifier/supprimer le flux (choix produit assumé).
 
 ## Auto-installation
 
-A chaque demarrage via `public/index.php`:
+À chaque démarrage via `public/index.php`:
 
 1. copie `.env.example` vers `.env` si absent,
 2. migration SQLite via `config/schema.sql`,
-3. creation du dossier de cache.
+3. création du dossier de cache.
 
-Le script CLI `bin/install.php` reste disponible et reutilise la meme logique.
+Le script CLI `bin/install.php` reste disponible et réutilise la même logique.
 
 ## Mode dev
 
@@ -64,10 +64,10 @@ Config `.env`:
 
 Comportement:
 
-- affichage detaille des erreurs,
+- affichage détaillé des erreurs,
 - conversion des erreurs PHP en exceptions,
-- journalisation des exceptions non capturees et fatales,
-- base SQLite dediee au dev.
+- journalisation des exceptions non capturées et fatales,
+- base SQLite dédiée au dev.
 
 ## Auto-suppression des flux inactifs
 
@@ -78,42 +78,42 @@ Config `.env`:
 
 Comportement:
 
-- execute a chaque requete,
+- exécuté à chaque requête,
 - supprime les flux dont `COALESCE(last_viewed_at, created_at)` est plus ancien que le seuil,
-- invalide les fichiers cache XML associes.
+- invalide les fichiers cache XML associés.
 
 ## Cache
 
 - Fichiers XML dans `var/cache`.
 - Nom de fichier: `{token}.xml`.
 - Invalidation:
-  - apres expiration `CACHE_TTL`,
-  - apres mise a jour/import/suppression,
-  - apres auto-prune.
+  - après expiration `CACHE_TTL`,
+  - après mise à jour/import/suppression,
+  - après auto-prune.
 
 ## Base SQLite
 
 Tables:
 
-- `feeds`: metadonnees du flux master (+ `last_viewed_at`).
-- `sources`: sources associees + regles black/star.
+- `feeds`: métadonnées du flux master (+ `last_viewed_at`).
+- `sources`: sources associées + règles black/star.
 
 Schema: `config/schema.sql`.
 
-## Regles de filtrage
+## Règles de filtrage
 
 Par source:
 
-- `black_words`: si un mot est present dans les zones ciblees, l'item est masque.
-- `star_words`: chaque mot present augmente un score de priorite.
+- `black_words`: si un mot est présent dans les zones ciblées, l'item est masqué.
+- `star_words`: chaque mot présent augmente un score de priorité.
 
-Zones ciblees:
+Zones ciblées:
 
 - titre,
 - description,
 - contenu.
 
-## Deduplication et tri
+## Déduplication et tri
 
 - Dedupe: `guid/id`, sinon `link`, sinon hash de secours.
 - Tri final:
@@ -133,12 +133,12 @@ Zones ciblees:
 - Themes fournis: `default`, `basic`, `dashboard`, `tiles`.
 - Fallback automatique sur `default`.
 
-## Verification de version
+## Vérification de version
 
 Config `.env`:
 
-- `VERSION_CHECK_ENABLED=1` pour activer la verification,
-- `VERSION_CHECK_ENABLED=0` pour la desactiver (par defaut).
+- `VERSION_CHECK_ENABLED=1` pour activer la vérification,
+- `VERSION_CHECK_ENABLED=0` pour la désactiver (par défaut).
 
 Comportement:
 
@@ -146,13 +146,13 @@ Comportement:
 - interroge le marqueur distant:
   - `https://raw.githubusercontent.com/GreenEffect/Sympli-RSS-Fusion/refs/heads/master/VERSION`,
 - compare les versions avec `version_compare`,
-- affiche la mention "Mise a jour disponible" dans le footer (bas droite, petit texte italique) quand la version distante est superieure,
-- lien de la mention vers le depot GitHub:
+- affiche la mention "Mise à jour disponible" dans le footer (bas droite, petit texte italique) quand la version distante est supérieure,
+- lien de la mention vers le dépôt GitHub:
   - `https://github.com/GreenEffect/Sympli-RSS-Fusion`.
 
 ## Exploitation
 
-### Demarrage local
+### Démarrage local
 
 ```bash
 cp .env.example .env
@@ -163,7 +163,7 @@ php -S 127.0.0.1:8080 -t public
 
 - Exposer `public/` comme document root.
 - Configurer `APP_URL` avec l'URL publique.
-- Verifier les droits d'ecriture sur `var/cache` et `var/data`.
+- Vérifier les droits d'écriture sur `var/cache` et `var/data`.
 
 ## Fichiers de gouvernance
 

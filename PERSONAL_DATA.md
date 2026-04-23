@@ -1,25 +1,25 @@
-# Donnees personnelles
+# Données personnelles
 
-Sympli RSS Fusion est pense pour minimiser la collecte de donnees.
+Sympli RSS Fusion est pensé pour minimiser la collecte de données.
 
-## Ce qui est stocke
+## Ce qui est stocké
 
-- Configuration des flux master (titre, description, sources, regles de filtrage).
-- Cache XML des flux agreges.
-- Journaux techniques selon le mode d'execution (`prod` ou `dev`).
+- Configuration des flux master (titre, description, sources, règles de filtrage).
+- Cache XML des flux agrégés.
+- Journaux techniques selon le mode d'exécution (`prod` ou `dev`).
 
-## Ce qui n'est pas impose
+## Ce qui n'est pas imposé
 
 - Aucun compte utilisateur.
 - Aucune base distante obligatoire.
-- Aucun service tiers necessaire pour fonctionner.
+- Aucun service tiers nécessaire pour fonctionner.
 
 ## Controle et suppression
 
 - Suppression manuelle des flux via l'interface.
 - Purge automatique optionnelle des flux inactifs.
-- Suppression locale des fichiers SQLite/cache/logs par l'hebergeur.
+- Suppression locale des fichiers SQLite/cache/logs par l'hébergeur.
 
-## Hebergement
+## Hébergement
 
-Les donnees restent sur votre infrastructure (self-hosted), selon votre configuration serveur.
+Les données restent sur votre infrastructure (self-hosted), selon votre configuration serveur.

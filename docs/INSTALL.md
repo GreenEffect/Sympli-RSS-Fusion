@@ -1,11 +1,11 @@
 # Installation Guide / Guide d'installation
 
 This document describes a full installation from zero.
-Ce document decrit une installation complete depuis zero.
+Ce document décrit une installation complète depuis zéro.
 
-## FR - Installation complete
+## FR - Installation complète
 
-### 1. Pre-requis
+### 1. Pré-requis
 
 - PHP: version 8.1+ (recommended 8.2 or 8.3).
 - PHP extensions required:
@@ -22,14 +22,14 @@ Ce document decrit une installation complete depuis zero.
   - `var/cache`
   - `var/log`
 
-### 2. Recuperer le projet
+### 2. Récupérer le projet
 
 ```bash
 git clone https://github.com/GreenEffect/Sympli-RSS-Fusion.git
 cd Sympli-RSS-Fusion
 ```
 
-### 3. Creer votre configuration locale
+### 3. Créer votre configuration locale
 
 Linux/macOS:
 
@@ -43,9 +43,9 @@ Windows PowerShell:
 Copy-Item .env.example .env
 ```
 
-### 4. Parametrer `.env`
+### 4. Paramétrer `.env`
 
-Minimum recommande:
+Minimum recommandé:
 
 - `APP_URL=http://127.0.0.1:8080`
 - `APP_ENV=prod` (ou `dev` pour debug)
@@ -57,8 +57,8 @@ Configuration importante:
 - `DB_PATH=var/data/sympli_rss_fusion.sqlite`
 - `DB_PATH_DEV=var/data/sympli_rss_fusion_dev.sqlite`
 - `LOG_PATH=var/log/app.log`
-- `VERSION_CHECK_ENABLED=0` (desactive par defaut)
-  - passer a `1` pour activer la verification de nouvelle version GitHub.
+- `VERSION_CHECK_ENABLED=0` (désactivé par défaut)
+  - passer à `1` pour activer la vérification de nouvelle version GitHub.
 
 ### 5. Demarrer l'application
 
@@ -70,47 +70,47 @@ Puis ouvrir:
 
 - `http://127.0.0.1:8080`
 
-### 6. Ce qui se passe au premier acces
+### 6. Ce qui se passe au premier accès
 
 Le bootstrap lance une installation idempotente:
 
-- creation de `.env` si absent (depuis `.env.example`),
-- creation des dossiers de travail (`var/cache`, `var/data`, `var/log` selon config),
-- application du schema SQLite (`config/schema.sql`) si necessaire.
+- création de `.env` si absent (depuis `.env.example`),
+- création des dossiers de travail (`var/cache`, `var/data`, `var/log` selon config),
+- application du schéma SQLite (`config/schema.sql`) si nécessaire.
 
-Aucune etape Composer n'est requise.
+Aucune étape Composer n'est requise.
 
-### 7. Verifications rapides
+### 7. Vérifications rapides
 
 - La page d'accueil s'affiche sans erreur 500.
-- La creation d'un flux fonctionne.
-- Un fichier SQLite est cree dans `var/data`.
-- Le cache XML apparait dans `var/cache` apres consultation d'un RSS.
-- En mode `dev`, les erreurs detaillees sont visibles et les logs sont alimentes.
+- La création d'un flux fonctionne.
+- Un fichier SQLite est créé dans `var/data`.
+- Le cache XML apparaît dans `var/cache` après consultation d'un RSS.
+- En mode `dev`, les erreurs détaillées sont visibles et les logs sont alimentés.
 
-### 8. Mise en production (resume)
+### 8. Mise en production (résumé)
 
 - Configurer votre serveur web avec `public/` comme document root.
-- Configurer une vraie `APP_URL` (HTTPS recommande).
-- Verifier les droits d'ecriture sur `var/`.
+- Configurer une vraie `APP_URL` (HTTPS recommandé).
+- Vérifier les droits d'écriture sur `var/`.
 - Garder `APP_ENV=prod` en production.
 
-Si vous avez deja un serveur web operationnel, le chemin le plus simple est:
+Si vous avez déjà un serveur web opérationnel, le chemin le plus simple est:
 
-- deposer les fichiers du projet sur le serveur,
-- editer `APP_URL` dans `.env` avec l'URL publique de votre instance,
+- déposer les fichiers du projet sur le serveur,
+- éditer `APP_URL` dans `.env` avec l'URL publique de votre instance,
 - ouvrir cette URL dans votre navigateur :)
 
-### 9. Depannage
+### 9. Dépannage
 
 - `Class not found`:
-  - verifier que `src/autoload.php` est present et charge par `public/index.php`.
+  - vérifier que `src/autoload.php` est présent et chargé par `public/index.php`.
 - Erreur SQLite (fichier inaccessible):
-  - verifier les droits sur `var/data` et la valeur de `DB_PATH`.
-- Impossible de recuperer les flux externes:
-  - verifier internet sortant, DNS, SSL, et `allow_url_fopen=1`.
-- Verification de version inactive:
-  - verifier `VERSION_CHECK_ENABLED=1` dans `.env`.
+  - vérifier les droits sur `var/data` et la valeur de `DB_PATH`.
+- Impossible de récupérer les flux externes:
+  - vérifier internet sortant, DNS, SSL, et `allow_url_fopen=1`.
+- Vérification de version inactive:
+  - vérifier `VERSION_CHECK_ENABLED=1` dans `.env`.
 
 ---
 

@@ -29,17 +29,17 @@ $pageTitle = '500 - Sympli RSS Fusion';
         <?php if (!empty($trace)): ?>
             <pre class="trace-box"><?= htmlspecialchars($trace) ?></pre>
         <?php endif; ?>
-        <p><a class="btn" href="/"><?= $lang === 'en' ? 'Back to home' : 'Retour a l\'accueil' ?></a></p>
+        <p><a class="btn" href="/"><?= $lang === 'en' ? 'Back to home' : 'Retour à l\'accueil' ?></a></p>
     </section>
 
     <footer class="card footer-card">
         <p>
             Sympli RSS Fusion -
             <a href="https://www.rss-fusion.fr" target="_blank" rel="noopener noreferrer">RSS Fusion</a> -
-            <a href="/privacy"><?= $lang === 'en' ? 'Personal data' : 'Donnees personnelles' ?></a>
+            <a href="/privacy"><?= $lang === 'en' ? 'Personal data' : 'Données personnelles' ?></a>
         </p>
         <p>
-            <a href="https://www.green-effect.fr" target="_blank" rel="noopener noreferrer"><?= $lang === 'en' ? 'Create your Sympli RSS Fusion instance' : 'Creer son instance Sympli RSS Fusion' ?></a>
+            <a href="https://www.green-effect.fr" target="_blank" rel="noopener noreferrer"><?= $lang === 'en' ? 'Create your Sympli RSS Fusion instance' : 'Créer son instance Sympli RSS Fusion' ?></a>
         </p>
     </footer>
 </main>

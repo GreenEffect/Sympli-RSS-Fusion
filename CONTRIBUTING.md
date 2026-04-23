@@ -1,13 +1,13 @@
 # Contributing
 
-Merci pour votre interet pour Sympli RSS Fusion.
+Merci pour votre intérêt pour Sympli RSS Fusion.
 
-## Prerequis
+## Prérequis
 
 - PHP 8.2+
-- Aucun Composer requis
+- Serveur web (optionnel)
 
-## Demarrage local
+## Démarrage local
 
 1. Copier `.env.example` vers `.env`.
 2. Lancer `php -S 127.0.0.1:8080 -t public`.
@@ -15,11 +15,11 @@ Merci pour votre interet pour Sympli RSS Fusion.
 
 ## Bonnes pratiques de contribution
 
-- Ouvrir une issue pour decrire le besoin (bug ou feature).
-- Proposer des modifications minimales et ciblees.
+- Ouvrir une issue pour décrire le besoin (bug ou feature).
+- Proposer des modifications minimales et ciblées.
 - Respecter le style existant (PHP strict types, code clair, commentaires utiles).
-- Mettre a jour la documentation quand un comportement change.
-- Verifier la syntaxe PHP avant soumission:
+- Mettre à jour la documentation quand un comportement change.
+- Vérifier la syntaxe PHP avant soumission:
 
 ```bash
 find . -name "*.php" -type f -print0 | xargs -0 -n1 php -l
@@ -28,5 +28,6 @@ find . -name "*.php" -type f -print0 | xargs -0 -n1 php -l
 ## Pull Request
 
 - Expliquer le contexte et l'impact utilisateur.
-- Lister les routes/fichiers modifies.
+- Lister les routes/fichiers modifiés.
 - Ajouter une note de test manuel.
+- Si pertinent, ajouter des captures écran
