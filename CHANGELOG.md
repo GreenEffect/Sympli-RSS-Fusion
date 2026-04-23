@@ -24,6 +24,8 @@ All notable changes to Sympli RSS Fusion will be documented in this file.
 - Optional remote version check (GitHub `VERSION`) with "Update available" footer alert.
 - OPML parsing safeguards (size limit, URL validation, duplicate URL filtering).
 - Dynamic version badge in README header based on GitHub tags.
+- Apache front-controller routing via `public/.htaccess` for non-file requests.
+- First-install bootstrap now auto-detects the current domain/protocol and injects it into `APP_URL` in generated `.env`.
 
 ### Changed
 
@@ -31,6 +33,7 @@ All notable changes to Sympli RSS Fusion will be documented in this file.
 - Removed Composer references from the application.
 - README header enhanced with centered project logo and key badges (version, PHP minimum, license, status).
 - Installation and route documentation updated to include OPML endpoints.
+- Reverse-proxy installation behavior improved by honoring forwarded protocol when initializing `APP_URL`.
 
 ### Security
 
