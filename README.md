@@ -1,3 +1,14 @@
+<p align="center">
+	<img src="docs/logo.svg" alt="Sympli RSS Fusion logo" width="220">
+</p>
+
+<p align="center">
+	<a href="https://github.com/GreenEffect/Sympli-RSS-Fusion/releases"><img src="https://img.shields.io/github/v/tag/GreenEffect/Sympli-RSS-Fusion?sort=semver&label=version" alt="Latest version"></a>
+	<img src="https://img.shields.io/badge/php-%3E%3D%208.1-777bb4" alt="PHP >= 8.1">
+	<img src="https://img.shields.io/badge/license-CC%20BY--NC--SA%204.0-0a7ea4" alt="License CC BY-NC-SA 4.0">
+	<img src="https://img.shields.io/badge/status-stable-1f9d55" alt="Status stable">
+</p>
+
 # Sympli RSS Fusion
 
 ## FR
