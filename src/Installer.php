@@ -31,6 +31,7 @@ final class Installer
     {
         if (!is_file($projectRoot . '/.env') && is_file($projectRoot . '/.env.example')) {
             copy($projectRoot . '/.env.example', $projectRoot . '/.env');
+            self::patchAppUrl($projectRoot . '/.env');
         }
 
         $config = Env::load($projectRoot);
@@ -47,6 +48,36 @@ final class Installer
         $logDir = dirname($logPath);
         if (!is_dir($logDir)) {
             mkdir($logDir, 0777, true);
+        }
+    }
+
+    private static function patchAppUrl(string $envPath): void
+    {
+        $host = $_SERVER['HTTP_HOST'] ?? '';
+        if ($host === '') {
+            return;
+        }
+
+        $proto = 'http';
+        $forwarded = strtolower(trim((string) ($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '')));
+        if ($forwarded === 'https') {
+            $proto = 'https';
+        } elseif (!empty($_SERVER['HTTPS']) && strtolower((string) $_SERVER['HTTPS']) !== 'off') {
+            $proto = 'https';
+        } elseif (isset($_SERVER['SERVER_PORT']) && (int) $_SERVER['SERVER_PORT'] === 443) {
+            $proto = 'https';
+        }
+
+        $url = $proto . '://' . $host;
+
+        $content = file_get_contents($envPath);
+        if (!is_string($content)) {
+            return;
+        }
+
+        $patched = preg_replace('/^APP_URL=.*$/m', 'APP_URL=' . $url, $content);
+        if (is_string($patched)) {
+            file_put_contents($envPath, $patched);
         }
     }
 
