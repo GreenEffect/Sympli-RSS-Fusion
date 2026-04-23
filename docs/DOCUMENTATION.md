@@ -1,5 +1,7 @@
 # Documentation technique
 
+## FR
+
 Projet: Sympli RSS Fusion
 
 ## Architecture
@@ -181,6 +183,65 @@ php -S 127.0.0.1:8080 -t public
 
 - `PERSONAL_DATA.md`
 - `CONTRIBUTING.md`
-- `CODE_OF_CONDUCT.md`
 - `SECURITY.md`
 - `CHANGELOG.md`
+
+---
+
+## EN - Technical documentation (summary)
+
+### Architecture
+
+- Front controller: `public/index.php`
+- HTTP router: `RssFusionKiss\Http\App`
+- Idempotent installer: `RssFusionKiss\Installer`
+- Error logger: `RssFusionKiss\Support\Logger`
+- SQLite persistence: `RssFusionKiss\Persistence\*`
+- Aggregation: `RssFusionKiss\Service\FeedAggregator`
+- Feed fetch/parsing + preview: `RssFusionKiss\Service\FeedFetcher`
+- XML cache: `RssFusionKiss\Service\CacheService`
+- JSON i18n: `RssFusionKiss\I18n\Translator`
+
+### Web root
+
+Web root must target `public/` to keep sensitive files out of direct HTTP access (`.env`, `var/data`, `var/log`, `src`).
+
+### Main routes
+
+- `GET /`, `POST /create`, `POST /import-master`
+- `GET /export-master?token=...`
+- `GET|POST /manage/{token}`
+- `POST /manage/{token}/delete`
+- `GET /manage/{token}/export`
+- `POST /manage/{token}/import`
+- `GET /preview-source?url=...`
+- `GET /rss/{token}`
+- `GET /privacy`
+
+### Security model
+
+- No user account.
+- Access is based on an unguessable 48-char hex token.
+- Token generation uses `random_bytes(24)`.
+
+### Runtime behavior
+
+- Auto-installs on first request (`.env`, folders, SQLite schema).
+- `dev` mode enables detailed errors and dedicated DB/logging.
+- Optional auto-prune for inactive feeds.
+- XML cache invalidation on TTL expiry and feed changes.
+
+### Version check
+
+When enabled with `VERSION_CHECK_ENABLED=1`, the app compares local `VERSION` with:
+
+- `https://raw.githubusercontent.com/GreenEffect/Sympli-RSS-Fusion/refs/heads/main/VERSION`
+
+and shows an update notice in footer if remote version is newer.
+
+### Production notes
+
+- Expose `public/` as document root.
+- Configure `APP_URL` with public URL.
+- Ensure write permissions on `var/cache` and `var/data`.
+- Never expose repository root over HTTP.

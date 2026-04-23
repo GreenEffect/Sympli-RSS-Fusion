@@ -1,10 +1,12 @@
 # Security Policy
 
-## Versions supportées
+## FR
 
-La branche principale est maintenue en priorite.
+### Versions supportées
 
-## Signaler une vulnérabilité
+La branche principale est maintenue en priorité.
+
+### Signaler une vulnérabilité
 
 Merci de ne pas ouvrir d'issue publique pour une faille de sécurité.
 
@@ -16,3 +18,24 @@ Informations utiles:
 - Étapes de reproduction
 - Impact estimé
 - Version/commit concerné
+
+---
+
+## EN
+
+### Supported versions
+
+The main branch is maintained as a priority.
+
+### Reporting a vulnerability
+
+Please do not open a public issue for security vulnerabilities.
+
+Send an email to: contact@green-effect.fr
+
+Useful information:
+
+- Vulnerability description
+- Reproduction steps
+- Estimated impact
+- Affected version/commit

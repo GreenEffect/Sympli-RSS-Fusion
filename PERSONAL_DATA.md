@@ -1,5 +1,7 @@
 # Données personnelles
 
+## FR
+
 Sympli RSS Fusion est pensé pour minimiser la collecte de données.
 
 ## Ce qui est stocké
@@ -23,3 +25,31 @@ Sympli RSS Fusion est pensé pour minimiser la collecte de données.
 ## Hébergement
 
 Les données restent sur votre infrastructure (self-hosted), selon votre configuration serveur.
+
+---
+
+## EN
+
+Sympli RSS Fusion is designed to minimize data collection.
+
+### What is stored
+
+- Master feed configuration (title, description, sources, filtering rules).
+- XML cache of aggregated feeds.
+- Technical logs depending on runtime mode (`prod` or `dev`).
+
+### What is not required
+
+- No user account.
+- No mandatory remote database.
+- No mandatory third-party service.
+
+### Control and deletion
+
+- Manual feed deletion from the interface.
+- Optional automatic pruning of inactive feeds.
+- Local deletion of SQLite/cache/log files by the host.
+
+### Hosting
+
+Data remains on your own infrastructure (self-hosted), depending on your server configuration.

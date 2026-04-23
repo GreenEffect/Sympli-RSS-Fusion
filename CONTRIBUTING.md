@@ -1,5 +1,7 @@
 # Contributing
 
+## FR
+
 Merci pour votre intérêt pour Sympli RSS Fusion.
 
 ## Prérequis
@@ -31,3 +33,39 @@ find . -name "*.php" -type f -print0 | xargs -0 -n1 php -l
 - Lister les routes/fichiers modifiés.
 - Ajouter une note de test manuel.
 - Si pertinent, ajouter des captures écran
+
+---
+
+## EN
+
+Thank you for your interest in Sympli RSS Fusion.
+
+### Prerequisites
+
+- PHP 8.2+
+- Web server (optional)
+
+### Local run
+
+1. Copy `.env.example` to `.env`.
+2. Run `php -S 127.0.0.1:8080 -t public`.
+3. Open `http://127.0.0.1:8080`.
+
+### Contribution guidelines
+
+- Open an issue to describe the need (bug or feature).
+- Propose minimal, focused changes.
+- Keep current style (PHP strict types, clear code, useful comments).
+- Update documentation when behavior changes.
+- Check PHP syntax before submission:
+
+```bash
+find . -name "*.php" -type f -print0 | xargs -0 -n1 php -l
+```
+
+### Pull Request
+
+- Explain context and user impact.
+- List changed routes/files.
+- Add manual test notes.
+- Add screenshots when relevant.

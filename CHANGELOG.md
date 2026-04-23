@@ -6,19 +6,19 @@ All notable changes to Sympli RSS Fusion will be documented in this file.
 
 ### Added
 
-- Multilangue FR/EN via fichiers JSON.
-- Themes UI configurables (`default`, `basic`, `dashboard`, `tiles`).
-- Import/export JSON depuis `/manage` et depuis la page d'entrée.
-- Preview source RSS avec prise en compte des règles black/star.
-- Suppression de flux depuis l'UI.
-- Auto-suppression des flux inactifs configurable via `.env`.
-- Mode dev avec affichage erreurs, logs, DB dédiée.
-- Pages d'erreur 404/500 dédiées.
-- Page Données personnelles.
-- Footer multilangue avec liens institutionnels.
-- Vérification optionnelle de version distante (fichier VERSION sur GitHub) avec alerte "Mise à jour disponible" dans le footer.
+- FR/EN multilingual support through JSON files.
+- Configurable UI themes (`default`, `basic`, `dashboard`, `tiles`).
+- JSON import/export from `/manage` and the home page.
+- RSS source preview with black/star filtering rules.
+- Feed deletion from UI.
+- Optional auto-pruning for inactive feeds via `.env`.
+- Dev mode with detailed errors, logs, and dedicated DB.
+- Dedicated 404/500 error pages.
+- Personal data page.
+- Multilingual footer with institutional links.
+- Optional remote version check (GitHub `VERSION`) with "Update available" footer alert.
 
 ### Changed
 
-- Rebranding vers Sympli RSS Fusion.
-- Suppression des références Composer dans l'application.
+- Rebranding to Sympli RSS Fusion.
+- Removed Composer references from the application.

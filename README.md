@@ -1,5 +1,7 @@
 # Sympli RSS Fusion
 
+## FR
+
 Sympli RSS Fusion est une application PHP auto-hébergeable pour fusionner plusieurs flux RSS/Atom en un flux master unique.
 
 ## Approche KISS
@@ -83,6 +85,89 @@ Ensuite, ouvrez l'URL du domaine.
 - Technique: `docs/DOCUMENTATION.md`
 - Données personnelles: `PERSONAL_DATA.md`
 - Contribuer: `CONTRIBUTING.md`
-- Code de conduite: `CODE_OF_CONDUCT.md`
 - Sécurité: `SECURITY.md`
 - Historique: `CHANGELOG.md`
+
+---
+
+## EN
+
+Sympli RSS Fusion is a self-hosted PHP application that merges multiple RSS/Atom feeds into a single master feed.
+
+### KISS approach
+
+The project is intentionally simple: one front controller (`public/index.php`) and no mandatory Composer dependency.
+
+The webroot must point to `public/`.
+This protects sensitive files from direct web access (`.env`, SQLite data in `var/data`, logs, PHP source).
+
+### Features
+
+- Merge multiple RSS/Atom sources into one master feed.
+- Per-source filters: black words and star words (title/description/content).
+- Source preview with immediate filtering feedback.
+- JSON import/export from home and management pages.
+- Manual feed deletion from UI.
+- Optional automatic pruning of inactive feeds.
+- FR/EN multilingual interface extensible through JSON.
+- Configurable themes: `default`, `basic`, `dashboard`, `tiles`.
+- `dev` mode (detailed errors, logs, dedicated DB).
+- Dedicated 404/500 pages + Personal data page.
+- Optional remote version check with footer alert.
+
+### Quick install
+
+```bash
+cp .env.example .env
+php -S 127.0.0.1:8080 -t public
+```
+
+Then open `http://127.0.0.1:8080`.
+
+### Fast server setup
+
+Already running a web server?
+Deploy project files and point your webroot to `public`.
+
+- Apache: `DocumentRoot /path/to/Sympli-RSS-Fusion/public`
+- Nginx: `root /path/to/Sympli-RSS-Fusion/public;`
+- Shared hosting: set your domain document root to `.../public`
+
+### .env configuration
+
+- `APP_NAME`: project name (default `Sympli RSS Fusion`).
+- `APP_URL`: public URL.
+- `APP_LANG`: `fr` or `en` (or any JSON file in `config/lang`).
+- `APP_THEME`: `default`, `basic`, `dashboard`, `tiles` (or custom theme).
+- `APP_ENV`: `prod` or `dev`.
+- `DB_PATH`: production SQLite path.
+- `DB_PATH_DEV`: development SQLite path.
+- `LOG_PATH`: logs file.
+- `CACHE_DIR`, `CACHE_TTL`, `HTTP_TIMEOUT`, `MAX_ITEMS`.
+- `AUTO_PRUNE_ENABLED`, `AUTO_PRUNE_DAYS`.
+- `PREVIEW_ITEMS`.
+- `VERSION_CHECK_ENABLED`: set `1` to enable remote version checks.
+
+### Routes
+
+- `GET /`
+- `POST /create`
+- `POST /import-master`
+- `GET /export-master?token=...`
+- `GET /manage/{token}`
+- `POST /manage/{token}`
+- `POST /manage/{token}/delete`
+- `GET /manage/{token}/export`
+- `POST /manage/{token}/import`
+- `GET /preview-source?url=...`
+- `GET /rss/{token}`
+- `GET /privacy`
+
+### Project documentation
+
+- Installation: `docs/INSTALL.md`
+- Technical: `docs/DOCUMENTATION.md`
+- Personal data: `PERSONAL_DATA.md`
+- Contributing: `CONTRIBUTING.md`
+- Security: `SECURITY.md`
+- Changelog: `CHANGELOG.md`
