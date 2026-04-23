@@ -5,6 +5,17 @@ Ce document décrit une installation complète depuis zéro.
 
 ## FR - Installation complète
 
+### Pourquoi `public/` comme racine web
+
+Sympli RSS Fusion sert le site depuis `public/` pour garder le reste du projet hors exposition HTTP.
+
+Concrètement, ce choix évite d'exposer:
+
+- `.env` (configuration),
+- `var/data/*.sqlite` (base),
+- `var/log/*` (journaux),
+- `src/*` (code PHP interne).
+
 ### 1. Pré-requis
 
 - PHP: version 8.1+ (recommended 8.2 or 8.3).
@@ -60,7 +71,7 @@ Configuration importante:
 - `VERSION_CHECK_ENABLED=0` (désactivé par défaut)
   - passer à `1` pour activer la vérification de nouvelle version GitHub.
 
-### 5. Demarrer l'application
+### 5. Démarrer l'application (local)
 
 ```bash
 php -S 127.0.0.1:8080 -t public
@@ -95,6 +106,48 @@ Aucune étape Composer n'est requise.
 - Vérifier les droits d'écriture sur `var/`.
 - Garder `APP_ENV=prod` en production.
 
+Exemples minimaux:
+
+- Apache (VirtualHost):
+
+```apache
+<VirtualHost *:80>
+  ServerName rssfusion.local
+  DocumentRoot /var/www/Sympli-RSS-Fusion/public
+
+  <Directory /var/www/Sympli-RSS-Fusion/public>
+    AllowOverride All
+    Require all granted
+  </Directory>
+</VirtualHost>
+```
+
+- Nginx:
+
+```nginx
+server {
+  listen 80;
+  server_name rssfusion.local;
+  root /var/www/Sympli-RSS-Fusion/public;
+  index index.php;
+
+  location / {
+    try_files $uri /index.php?$query_string;
+  }
+
+  location ~ \.php$ {
+    include fastcgi_params;
+    fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+    fastcgi_pass unix:/run/php/php8.2-fpm.sock;
+  }
+}
+```
+
+- Hébergement mutualisé:
+  - ouvrir le panneau de gestion du domaine,
+  - régler le document root vers `.../Sympli-RSS-Fusion/public`,
+  - laisser les autres dossiers du projet hors web.
+
 Si vous avez déjà un serveur web opérationnel, le chemin le plus simple est:
 
 - déposer les fichiers du projet sur le serveur,
@@ -112,9 +165,33 @@ Si vous avez déjà un serveur web opérationnel, le chemin le plus simple est:
 - Vérification de version inactive:
   - vérifier `VERSION_CHECK_ENABLED=1` dans `.env`.
 
+- Mon hébergeur pointe la racine du dépôt:
+  - privilégier le changement de document root vers `public/` (recommandé),
+  - si l'hébergeur impose `public_html`, utiliser un lien symbolique `public_html -> .../Sympli-RSS-Fusion/public` quand disponible,
+  - éviter d'exposer la racine du dépôt directement sur le web.
+
+### 10. Checklist de validation post-install
+
+1. La page `/` répond sans erreur 500.
+2. La création d'un flux produit une URL `/rss/{token}` valide.
+3. Le fichier SQLite est créé dans `var/data`.
+4. Le cache XML est créé dans `var/cache` après lecture du RSS.
+5. Les fichiers `.env` et `src/` ne sont pas accessibles via le navigateur.
+
 ---
 
 ## EN - Full setup
+
+### Why `public/` as web root
+
+Sympli RSS Fusion serves HTTP traffic from `public/` so that internal files remain outside direct web access.
+
+This prevents exposing:
+
+- `.env` (configuration),
+- `var/data/*.sqlite` (database),
+- `var/log/*` (logs),
+- `src/*` (internal PHP code).
 
 ### 1. Prerequisites
 
@@ -208,6 +285,48 @@ No Composer step is needed.
 - Verify write permissions on `var/`.
 - Keep `APP_ENV=prod` in production.
 
+Minimal examples:
+
+- Apache (VirtualHost):
+
+```apache
+<VirtualHost *:80>
+  ServerName rssfusion.local
+  DocumentRoot /var/www/Sympli-RSS-Fusion/public
+
+  <Directory /var/www/Sympli-RSS-Fusion/public>
+    AllowOverride All
+    Require all granted
+  </Directory>
+</VirtualHost>
+```
+
+- Nginx:
+
+```nginx
+server {
+  listen 80;
+  server_name rssfusion.local;
+  root /var/www/Sympli-RSS-Fusion/public;
+  index index.php;
+
+  location / {
+    try_files $uri /index.php?$query_string;
+  }
+
+  location ~ \.php$ {
+    include fastcgi_params;
+    fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+    fastcgi_pass unix:/run/php/php8.2-fpm.sock;
+  }
+}
+```
+
+- Shared hosting:
+  - open your domain settings panel,
+  - set the domain document root to `.../Sympli-RSS-Fusion/public`,
+  - keep all other project folders out of direct web access.
+
 If you already have a working web server, the quickest path is:
 
 - upload the project files to that server,
@@ -224,3 +343,16 @@ If you already have a working web server, the quickest path is:
   - check outbound network, DNS, SSL, and `allow_url_fopen=1`.
 - Version check not visible:
   - ensure `VERSION_CHECK_ENABLED=1` in `.env`.
+
+- Host points to repository root:
+  - prefer changing document root to `public/` (recommended),
+  - if host enforces `public_html`, use a symlink `public_html -> .../Sympli-RSS-Fusion/public` when available,
+  - avoid exposing repository root directly on the web.
+
+### 10. Post-install validation checklist
+
+1. `/` loads without 500 errors.
+2. Creating a feed returns a working `/rss/{token}` URL.
+3. SQLite file exists in `var/data`.
+4. XML cache appears in `var/cache` after RSS access.
+5. `.env` and `src/` are not directly reachable from browser.

@@ -14,6 +14,17 @@ Projet: Sympli RSS Fusion
 - Cache XML: `RssFusionKiss\Service\CacheService`
 - I18n JSON: `RssFusionKiss\I18n\Translator`
 
+## Choix de racine web
+
+La racine web doit cibler `public/`.
+
+Ce choix garde hors exposition HTTP les éléments sensibles du projet:
+
+- `.env`,
+- base SQLite dans `var/data`,
+- logs dans `var/log`,
+- code applicatif dans `src`.
+
 ## Routes
 
 - `GET /`: interface création + ouverture d'un flux existant.
@@ -126,11 +137,11 @@ Zones ciblées:
 - Langue active: `APP_LANG`.
 - Fallback automatique sur `fr`.
 
-## Themes
+## Thèmes
 
-- Fichiers de theme: `public/themes/<nom>.css`.
-- Theme actif: `APP_THEME`.
-- Themes fournis: `default`, `basic`, `dashboard`, `tiles`.
+- Fichiers de thème: `public/themes/<nom>.css`.
+- Thème actif: `APP_THEME`.
+- Thèmes fournis: `default`, `basic`, `dashboard`, `tiles`.
 - Fallback automatique sur `default`.
 
 ## Vérification de version
@@ -144,7 +155,7 @@ Comportement:
 
 - lit la version locale depuis le fichier `VERSION`,
 - interroge le marqueur distant:
-  - `https://raw.githubusercontent.com/GreenEffect/Sympli-RSS-Fusion/refs/heads/master/VERSION`,
+  - `https://raw.githubusercontent.com/GreenEffect/Sympli-RSS-Fusion/refs/heads/main/VERSION`,
 - compare les versions avec `version_compare`,
 - affiche la mention "Mise à jour disponible" dans le footer (bas droite, petit texte italique) quand la version distante est supérieure,
 - lien de la mention vers le dépôt GitHub:
@@ -164,6 +175,7 @@ php -S 127.0.0.1:8080 -t public
 - Exposer `public/` comme document root.
 - Configurer `APP_URL` avec l'URL publique.
 - Vérifier les droits d'écriture sur `var/cache` et `var/data`.
+- Ne pas exposer la racine du dépôt sur le web.
 
 ## Fichiers de gouvernance
 

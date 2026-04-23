@@ -2,6 +2,13 @@
 
 Sympli RSS Fusion est une application PHP auto-hébergeable pour fusionner plusieurs flux RSS/Atom en un flux master unique.
 
+## Approche KISS
+
+Le projet reste volontairement simple: un front controller unique (`public/index.php`) et pas de dépendance Composer obligatoire.
+
+Le webroot doit pointer sur `public/`.
+Ce choix protège automatiquement les fichiers sensibles hors web (`.env`, `var/data` SQLite, logs, source PHP).
+
 ## Fonctionnalités
 
 - Fusion de plusieurs sources RSS/Atom dans un flux master.
@@ -27,14 +34,18 @@ Puis ouvrir `http://127.0.0.1:8080`.
 
 ## Installation ultra rapide
 
-Déjà un serveur web ? 
-Déposez les fichiers dans votre répertoire. Paramétrez votre serveur pour pointer sur le répertoire `public`.
+Déjà un serveur web ?
+Déposez les fichiers du projet puis pointez la racine web vers le dossier `public`.
+
+- Apache: `DocumentRoot /chemin/vers/Sympli-RSS-Fusion/public`
+- Nginx: `root /chemin/vers/Sympli-RSS-Fusion/public;`
+- Mutualisé: dans le panneau d'hébergement, définir le "document root" du domaine sur `.../public`
 
 ```bash
 cp .env.example .env
 ```
 
-Enjoy !
+Ensuite, ouvrez l'URL du domaine.
 
 ## Configuration .env
 
