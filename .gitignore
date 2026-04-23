@@ -1,0 +1,5 @@
+/.env
+/var/cache/*.xml
+/var/data/*.sqlite
+/var/log/
+/var/log/*.log
