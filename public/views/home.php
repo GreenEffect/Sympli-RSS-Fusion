@@ -115,7 +115,7 @@ $pageTitle = $appName;
         <div class="grid">
             <div>
                 <label><?= htmlspecialchars($t('source.black_words')) ?></label>
-                <input type="text" name="black_words[]" placeholder="sponsor, ads, promo">
+                <input type="text" name="black_words[]" placeholder="ads, Elon Musk, botshit">
             </div>
             <div class="checks">
                 <label><input type="checkbox" name="black_target_title[index]" checked><?= htmlspecialchars($t('target.title')) ?></label>
@@ -126,7 +126,7 @@ $pageTitle = $appName;
         <div class="grid">
             <div>
                 <label><?= htmlspecialchars($t('source.star_words')) ?></label>
-                <input type="text" name="star_words[]" placeholder="php, symfony, contao">
+                <input type="text" name="star_words[]" placeholder="php, privacy, Framasoft, datalove">
             </div>
             <div class="checks">
                 <label><input type="checkbox" name="star_target_title[index]" checked><?= htmlspecialchars($t('target.title')) ?></label>
