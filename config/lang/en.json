@@ -7,6 +7,7 @@
   "error.import_upload": "Unable to read uploaded file.",
   "error.import_invalid_json": "Invalid JSON file.",
   "error.import_invalid_structure": "Imported structure is invalid.",
+  "error.invalid_csrf": "Session expired or invalid request. Reload the page and try again.",
   "error.invalid_url": "Invalid URL.",
   "error.master_token_required": "Please provide a valid feed URL/token to export.",
   "flash.feed_updated_cache_cleared": "Feed updated. Cache has been invalidated.",

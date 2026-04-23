@@ -144,6 +144,7 @@ final class App
             'manage.copy_failed',
         ]), JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
         $privacyUrl = '/privacy';
+        $csrfToken = $this->getCsrfToken();
         $versionUpdateAvailable = $this->isVersionUpdateAvailable();
         $versionRepoUrl = self::VERSION_REPO_URL;
 
@@ -175,6 +176,7 @@ final class App
             'manage.copy_failed',
         ]), JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
         $privacyUrl = '/privacy';
+        $csrfToken = $this->getCsrfToken();
         $versionUpdateAvailable = $this->isVersionUpdateAvailable();
         $versionRepoUrl = self::VERSION_REPO_URL;
 
@@ -196,6 +198,11 @@ final class App
 
     private function handleCreate(): void
     {
+        if (!$this->validateCsrfToken()) {
+            $this->renderHome($this->translator->t('error.invalid_csrf'));
+            return;
+        }
+
         $title = trim((string) ($_POST['title'] ?? ''));
         $description = trim((string) ($_POST['description'] ?? ''));
         $sources = $this->extractSources($_POST);
@@ -211,6 +218,11 @@ final class App
 
     private function handleUpdate(string $token): void
     {
+        if (!$this->validateCsrfToken()) {
+            $this->renderManage($token, $this->translator->t('error.invalid_csrf'));
+            return;
+        }
+
         $title = trim((string) ($_POST['title'] ?? ''));
         $description = trim((string) ($_POST['description'] ?? ''));
         $sources = $this->extractSources($_POST);
@@ -232,6 +244,11 @@ final class App
 
     private function handleDelete(string $token): void
     {
+        if (!$this->validateCsrfToken()) {
+            $this->renderManage($token, $this->translator->t('error.invalid_csrf'));
+            return;
+        }
+
         $deleted = $this->repository->deleteFeedByToken($token);
         $this->cache->invalidate($token);
 
@@ -284,6 +301,11 @@ final class App
 
     private function handleImportMaster(): void
     {
+        if (!$this->validateCsrfToken()) {
+            $this->renderHome($this->translator->t('error.invalid_csrf'));
+            return;
+        }
+
         $config = $this->parseImportUpload($_FILES['import_master_file'] ?? null, $error);
         if ($config === null) {
             $this->renderHome($error ?? $this->translator->t('error.import_invalid_structure'));
@@ -296,6 +318,11 @@ final class App
 
     private function handleImport(string $token): void
     {
+        if (!$this->validateCsrfToken()) {
+            $this->renderManage($token, $this->translator->t('error.invalid_csrf'));
+            return;
+        }
+
         $config = $this->parseImportUpload($_FILES['import_file'] ?? null, $error);
         if ($config === null) {
             $this->renderManage($token, $error ?? $this->translator->t('error.import_invalid_structure'));
@@ -527,6 +554,54 @@ final class App
         }
 
         return '';
+    }
+
+    private function ensureSessionStarted(): void
+    {
+        if (session_status() === PHP_SESSION_ACTIVE) {
+            return;
+        }
+
+        $isHttps = !empty($_SERVER['HTTPS']) && strtolower((string) $_SERVER['HTTPS']) !== 'off';
+        if (!$isHttps && isset($_SERVER['SERVER_PORT'])) {
+            $isHttps = ((int) $_SERVER['SERVER_PORT']) === 443;
+        }
+
+        session_set_cookie_params([
+            'lifetime' => 0,
+            'path' => '/',
+            'secure' => $isHttps,
+            'httponly' => true,
+            'samesite' => 'Lax',
+        ]);
+        session_start();
+    }
+
+    private function getCsrfToken(): string
+    {
+        $this->ensureSessionStarted();
+
+        $token = $_SESSION['csrf_token'] ?? null;
+        if (!is_string($token) || $token === '') {
+            $token = bin2hex(random_bytes(32));
+            $_SESSION['csrf_token'] = $token;
+        }
+
+        return $token;
+    }
+
+    private function validateCsrfToken(): bool
+    {
+        $this->ensureSessionStarted();
+
+        $token = $_SESSION['csrf_token'] ?? null;
+        $submitted = $_POST['_csrf'] ?? null;
+
+        if (!is_string($token) || $token === '' || !is_string($submitted) || $submitted === '') {
+            return false;
+        }
+
+        return hash_equals($token, $submitted);
     }
 
     private function autoPrune(): void

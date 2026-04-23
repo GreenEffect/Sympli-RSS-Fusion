@@ -46,15 +46,18 @@ $pageTitle = $t('manage.page_title') . ' - ' . (string) $feed['title'];
         <div class="toolbar">
             <a class="btn" href="<?= htmlspecialchars($exportUrl) ?>"><?= htmlspecialchars($t('manage.export')) ?></a>
             <form method="post" action="<?= htmlspecialchars($importUrl) ?>" enctype="multipart/form-data" class="inline-import">
+                <input type="hidden" name="_csrf" value="<?= htmlspecialchars($csrfToken) ?>">
                 <input type="file" name="import_file" accept="application/json,.json" required>
                 <button type="submit" class="secondary"><?= htmlspecialchars($t('manage.import_button')) ?></button>
             </form>
             <form method="post" action="<?= htmlspecialchars($deleteUrl) ?>" onsubmit="return confirm('<?= htmlspecialchars($t('manage.delete_confirm')) ?>');">
+                <input type="hidden" name="_csrf" value="<?= htmlspecialchars($csrfToken) ?>">
                 <button type="submit" class="danger"><?= htmlspecialchars($t('manage.delete')) ?></button>
             </form>
         </div>
 
         <form method="post">
+            <input type="hidden" name="_csrf" value="<?= htmlspecialchars($csrfToken) ?>">
             <div class="grid">
                 <div>
                     <label><?= htmlspecialchars($t('form.master_title')) ?></label>

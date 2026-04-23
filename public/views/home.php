@@ -47,6 +47,7 @@ $pageTitle = $appName;
             <div id="options-panel" class="options-panel" hidden>
                 <div class="grid options-grid">
                     <form method="post" action="/import-master" enctype="multipart/form-data" class="options-form">
+                        <input type="hidden" name="_csrf" value="<?= htmlspecialchars($csrfToken) ?>">
                         <h3><?= htmlspecialchars($t('home.options_import_title')) ?></h3>
                         <p class="muted"><?= htmlspecialchars($t('home.options_import_text')) ?></p>
                         <input type="file" name="import_master_file" accept="application/json,.json" required>
@@ -73,6 +74,7 @@ $pageTitle = $appName;
     <section class="card">
         <h2><?= htmlspecialchars($t('home.create_title')) ?></h2>
         <form method="post" action="/create" id="feed-form">
+            <input type="hidden" name="_csrf" value="<?= htmlspecialchars($csrfToken) ?>">
             <div class="grid">
                 <div>
                     <label><?= htmlspecialchars($t('form.master_title')) ?></label>

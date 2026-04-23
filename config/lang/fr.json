@@ -7,6 +7,7 @@
   "error.import_upload": "Impossible de lire le fichier importé.",
   "error.import_invalid_json": "Le fichier JSON est invalide.",
   "error.import_invalid_structure": "La structure importée est invalide.",
+  "error.invalid_csrf": "Session expirée ou requête invalide. Rechargez la page et réessayez.",
   "error.invalid_url": "URL invalide.",
   "error.master_token_required": "Veuillez saisir une URL/token valide pour exporter.",
   "flash.feed_updated_cache_cleared": "Flux mis à jour. Le cache a été vidé.",
