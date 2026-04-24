@@ -11,6 +11,16 @@
 
 # Sympli RSS Fusion
 
+<!-- Après le logo -->
+<p align="center">
+  <img src="docs/screenshot/rssfusion.png" alt="Thème RSS Fusion" width="48%" />
+  <img src="docs/screenshot/dashboard.png" alt="Thème Dashboard" width="48%" />
+</p>
+<p align="center">
+  <img src="docs/screenshot/default.png" alt="Thème Default" width="48%" />
+  <img src="docs/screenshot/basic.png" alt="Thème Basic" width="48%" />
+</p>
+
 ## FR
 
 Sympli RSS Fusion est une application PHP auto-hébergeable pour fusionner plusieurs flux RSS/Atom en un flux master unique. Il s'agit d'une version "lite" et autonome de [RSS Fusion](https://www.rss-fusion.fr).
