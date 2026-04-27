@@ -206,7 +206,7 @@ button.danger {
 }
 
 .options-panel.open {
-  max-height: 420px;
+  max-height: 100%;
   opacity: 1;
 }
 

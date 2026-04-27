@@ -207,7 +207,7 @@ button.danger {
   transition: max-height .18s ease, opacity .18s ease;
 }
 .options-panel.open {
-  max-height: 420px;
+  max-height: 100%;
   opacity: 1;
 }
 .options-grid { margin-top: .7rem; }
