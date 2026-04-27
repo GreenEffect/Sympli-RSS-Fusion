@@ -151,6 +151,7 @@ server {
 Si vous avez déjà un serveur web opérationnel, le chemin le plus simple est:
 
 - déposer les fichiers du projet sur le serveur,
+- régler le document root vers `.../Sympli-RSS-Fusion/public`,
 - éditer `APP_URL` dans `.env` avec l'URL publique de votre instance,
 - ouvrir cette URL dans votre navigateur :)
 
@@ -337,6 +338,7 @@ server {
 If you already have a working web server, the quickest path is:
 
 - upload the project files to that server,
+- set the domain document root to `.../Sympli-RSS-Fusion/public`,
 - update `APP_URL` in `.env` with your public instance URL,
 - open that URL in your browser :)
 
