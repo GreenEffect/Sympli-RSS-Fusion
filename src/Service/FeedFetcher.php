@@ -40,7 +40,7 @@ final class FeedFetcher
         $context = stream_context_create([
             'http' => [
                 'timeout' => $this->timeout,
-                'user_agent' => 'RSS-Fusion-KISS/1.0',
+                'user_agent' => 'Sympli-RSS-Fusion/1.0',
             ],
         ]);
 
@@ -81,7 +81,7 @@ final class FeedFetcher
         $context = stream_context_create([
             'http' => [
                 'timeout' => $this->timeout,
-                'user_agent' => 'RSS-Fusion-KISS/1.0',
+                'user_agent' => 'Sympli-RSS-Fusion/1.0',
             ],
         ]);
 
