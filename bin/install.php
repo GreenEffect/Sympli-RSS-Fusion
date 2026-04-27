@@ -29,4 +29,4 @@ require $projectRoot . '/src/autoload.php';
 
 Installer::ensureInstalled($projectRoot);
 
-echo "Installation terminee.\n";
+echo "Installation complete.\n";
