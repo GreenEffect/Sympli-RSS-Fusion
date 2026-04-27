@@ -205,3 +205,5 @@ Deploy project files and point your webroot to `public`.
 - Contributing: `CONTRIBUTING.md`
 - Security: `SECURITY.md`
 - Changelog: `CHANGELOG.md`
+
+*initial repository structure generated with Claude.ai*

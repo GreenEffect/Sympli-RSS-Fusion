@@ -6,7 +6,7 @@ Merci pour votre intérêt pour Sympli RSS Fusion.
 
 ## Prérequis
 
-- PHP 8.2+
+- PHP 8.1+
 - Serveur web (optionnel)
 
 ## Démarrage local
@@ -42,7 +42,7 @@ Thank you for your interest in Sympli RSS Fusion.
 
 ### Prerequisites
 
-- PHP 8.2+
+- PHP 8.1+
 - Web server (optional)
 
 ### Local run
