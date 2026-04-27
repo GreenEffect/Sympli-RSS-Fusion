@@ -1,251 +1,196 @@
-# Documentation technique
+# Technical Documentation
 
-## FR
+Project: Sympli RSS Fusion
 
-Projet: Sympli RSS Fusion
+Live demo: [https://sympli.rss-fusion.com/](https://sympli.rss-fusion.com/)
 
-Démo en ligne: https://sympli.rss-fusion.com/
+---
 
 ## 🏗️ Architecture
 
-- Front controller: `public/index.php`
-- Routeur HTTP: `RssFusionKiss\Http\App`
-- Installateur idempotent (auto au premier accès): `RssFusionKiss\Installer`
-- Logger erreur: `RssFusionKiss\Support\Logger`
-- Persistance SQLite: `RssFusionKiss\Persistence\*`
-- Aggregation: `RssFusionKiss\Service\FeedAggregator`
-- Récupération/parsing des feeds + preview: `RssFusionKiss\Service\FeedFetcher`
-- Cache XML: `RssFusionKiss\Service\CacheService`
-- I18n JSON: `RssFusionKiss\I18n\Translator`
+- **Front controller**: `public/index.php`
+- **HTTP router**: `RssFusionKiss\Http\App`
+- **Idempotent installer**: `RssFusionKiss\Installer` (auto-triggered on first access)
+- **Error logger**: `RssFusionKiss\Support\Logger`
+- **SQLite persistence**: `RssFusionKiss\Persistence\*`
+- **Aggregation**: `RssFusionKiss\Service\FeedAggregator`
+- **Feed fetching/parsing + preview**: `RssFusionKiss\Service\FeedFetcher`
+- **XML cache**: `RssFusionKiss\Service\CacheService`
+- **JSON i18n**: `RssFusionKiss\I18n\Translator`
 
-## 🔒 Choix de racine web
+---
 
-La racine web doit cibler `public/`.
+## 🔒 Web Root
 
-Ce choix garde hors exposition HTTP les éléments sensibles du projet:
+The web root **must** target `public/` to prevent HTTP exposure of sensitive files:
 
-- `.env`,
-- base SQLite dans `var/data`,
-- logs dans `var/log`,
-- code applicatif dans `src`.
+- `.env`
+- SQLite databases in `var/data`
+- Logs in `var/log`
+- Application code in `src`
+
+---
 
 ## 🛣️ Routes
+   Method | Route | Description |
+ |--------|-------|-------------|
+ | GET | `/` | Interface for creating/opening a feed. |
+ | POST | `/create` | Create a new feed. |
+ | POST | `/import-master` | Import a new master feed from JSON. |
+ | GET | `/export-master?token=...` | Export a master feed as JSON from the entry page. |
+ | GET | `/manage/{token}` | Edit a feed. |
+ | POST | `/manage/{token}` | Save feed edits. |
+ | POST | `/manage/{token}/delete` | Delete a feed. |
+ | GET | `/manage/{token}/export` | Export feed configuration as JSON. |
+ | POST | `/manage/{token}/import` | Import feed configuration from JSON. |
+ | GET | `/preview-source?url=...` | Mini-parser to preview a source. |
+ | GET | `/rss/{token}` | RSS XML output. |
+ | GET | `/privacy` | Personal data transparency page. |
 
-- `GET /`: interface création + ouverture d'un flux existant.
-- `POST /create`: création d'un flux.
-- `POST /import-master`: import JSON d'un nouveau flux master.
-- `GET /export-master?token=...`: export JSON d'un flux master depuis la page d'entrée.
-- `GET /manage/{token}`: édition d'un flux.
-- `POST /manage/{token}`: sauvegarde de l'édition.
-- `POST /manage/{token}/delete`: suppression d'un flux.
-- `GET /manage/{token}/export`: export JSON de configuration.
-- `POST /manage/{token}/import`: import JSON de configuration.
-- `GET /preview-source?url=...`: mini parseur pour prévisualiser une source.
-- `GET /rss/{token}`: sortie RSS XML.
-- `GET /privacy`: page de transparence sur les données personnelles.
+**Error pages:**
+- 404: `public/views/errors/404.php`
+- 500: `public/views/errors/500.php`
 
-Pages d'erreur:
+---
 
-- `404`: `public/views/errors/404.php`
-- `500`: `public/views/errors/500.php`
+## Open Mode
 
-## Mode ouvert
+No account required. The **48-char hex token** is the access key.
 
-Aucun compte n'est requis. Le token (48 chars hex) est la clé d'accès.
+---
 
-## Sécurité du lien unique
+## Unique Link Security
 
-- Token généré via `random_bytes(24)`.
-- Token difficilement devinable.
-- Toute personne ayant le lien peut consommer/modifier/supprimer le flux (choix produit assumé).
+- Token generated via `random_bytes(24)`.
+- Token is unguessable.
+- Anyone with the link can **view, modify, or delete** the feed (product design choice).
 
-## ⚙️ Auto-installation
+---
 
-À chaque démarrage via `public/index.php`:
+## ⚙️ Auto-Installation
 
-1. copie `.env.example` vers `.env` si absent,
-2. migration SQLite via `config/schema.sql`,
-3. création du dossier de cache.
+On every startup via `public/index.php`:
 
-Le script CLI `bin/install.php` reste disponible et réutilise la même logique.
+1. Copies `.env.example` to `.env` if missing.
+2. Runs SQLite migration via `config/schema.sql`.
+3. Creates the cache directory.
 
-## Mode dev
+The CLI script `bin/install.php` is also available and reuses the same logic.
 
-Config `.env`:
+---
+
+## Dev Mode
+
+Configure in `.env`:
 
 - `APP_ENV=dev`
 - `DB_PATH_DEV=...`
 - `LOG_PATH=...`
 
-Comportement:
+**Behavior:**
+- Detailed error display.
+- PHP errors converted to exceptions.
+- Logging of uncaught and fatal exceptions.
+- Dedicated SQLite database for development.
 
-- affichage détaillé des erreurs,
-- conversion des erreurs PHP en exceptions,
-- journalisation des exceptions non capturées et fatales,
-- base SQLite dédiée au dev.
+---
 
-## Auto-suppression des flux inactifs
+## Auto-Pruning of Inactive Feeds
 
-Config `.env`:
+Configure in `.env`:
 
-- `AUTO_PRUNE_ENABLED=1` pour activer,
-- `AUTO_PRUNE_DAYS=<nombre>` pour le seuil.
+- `AUTO_PRUNE_ENABLED=1` to enable.
+- `AUTO_PRUNE_DAYS=<number>` to set the threshold in days.
 
-Comportement:
+**Behavior:**
+- Runs on every request.
+- Deletes feeds where `COALESCE(last_viewed_at, created_at)` is older than the threshold.
+- Invalidates associated XML cache files.
 
-- exécuté à chaque requête,
-- supprime les flux dont `COALESCE(last_viewed_at, created_at)` est plus ancien que le seuil,
-- invalide les fichiers cache XML associés.
+---
 
 ## Cache
 
-- Fichiers XML dans `var/cache`.
-- Nom de fichier: `{token}.xml`.
-- Invalidation:
-  - après expiration `CACHE_TTL`,
-  - après mise à jour/import/suppression,
-  - après auto-prune.
+- XML files stored in `var/cache`.
+- Filename: `{token}.xml`.
+- **Invalidation triggers:**
+  - After `CACHE_TTL` expiry.
+  - After feed update/import/deletion.
+  - After auto-prune.
 
-## Base SQLite
+---
 
-Tables:
+## SQLite Database
 
-- `feeds`: métadonnées du flux master (+ `last_viewed_at`).
-- `sources`: sources associées + règles black/star.
+**Tables:**
+- `feeds`: Master feed metadata (+ `last_viewed_at`).
+- `sources`: Associated sources + blacklist/star rules.
 
-Schema: `config/schema.sql`.
+**Schema:** `config/schema.sql`
 
-## Règles de filtrage
+---
 
-Par source:
+## Filtering Rules
 
-- `black_words`: si un mot est présent dans les zones ciblées, l'item est masqué.
-- `star_words`: chaque mot présent augmente un score de priorité.
+**Per source:**
+- `black_words`: If any word is present in the targeted fields, the item is hidden.
+- `star_words`: Each matching word increases a priority score.
 
-Zones ciblées:
+**Targeted fields:**
+- Title
+- Description
+- Content
 
-- titre,
-- description,
-- contenu.
+---
 
-## Déduplication et tri
+## Deduplication and Sorting
 
-- Dedupe: `guid/id`, sinon `link`, sinon hash de secours.
-- Tri final:
-  1. score star descendant,
-  2. date descendante.
+- **Deduplication:** By `guid/id`, then `link`, then fallback hash.
+- **Final sort:**
+  1. Star score (descending)
+  2. Date (descending)
+
+---
 
 ## I18n
 
-- Fichiers de traduction: `config/lang/<code>.json`.
-- Langue active: `APP_LANG`.
-- Fallback automatique sur `fr`.
+- Translation files: `config/lang/<code>.json`
+- Active language: `APP_LANG`
+- Automatic fallback to `fr`
 
-## Thèmes
+---
 
-- Fichiers de thème: `public/themes/<nom>.css`.
-- Thème actif: `APP_THEME`.
-- Thèmes fournis: `default`, `basic`, `dashboard`, `tiles`.
-- Fallback automatique sur `default`.
+## Themes
 
-## 🔄 Vérification de version
+- Theme files: `public/themes/<name>.css`
+- Active theme: `APP_THEME`
+- Provided themes: `default`, `basic`, `dashboard`, `tiles`
+- Automatic fallback to `default`
 
-Config `.env`:
+---
 
-- `VERSION_CHECK_ENABLED=1` pour activer la vérification,
-- `VERSION_CHECK_ENABLED=0` pour la désactiver (par défaut).
+## 🔄 Version Check
 
-Comportement:
+Configure in `.env`:
 
-- lit la version locale depuis le fichier `VERSION`,
-- interroge le marqueur distant:
-  - `https://raw.githubusercontent.com/GreenEffect/Sympli-RSS-Fusion/refs/heads/main/VERSION`,
-- compare les versions avec `version_compare`,
-- affiche la mention "Mise à jour disponible" dans le footer (bas droite, petit texte italique) quand la version distante est supérieure,
-- lien de la mention vers le dépôt GitHub:
-  - `https://github.com/GreenEffect/Sympli-RSS-Fusion`.
+- `VERSION_CHECK_ENABLED=1` to enable.
+- `VERSION_CHECK_ENABLED=0` to disable (default).
 
-## 🧪 Exploitation
+**Behavior:**
+- Reads local version from `VERSION`.
+- Fetches remote version from:
+  - [https://raw.githubusercontent.com/GreenEffect/Sympli-RSS-Fusion/refs/heads/main/VERSION](https://raw.githubusercontent.com/GreenEffect/Sympli-RSS-Fusion/refs/heads/main/VERSION)
+- Compares versions with `version_compare`.
+- Displays "Update available" in the footer (bottom right, italic) if the remote version is newer.
+- Links to the GitHub repository:
+  - [https://github.com/GreenEffect/Sympli-RSS-Fusion](https://github.com/GreenEffect/Sympli-RSS-Fusion)
 
-### Démarrage local
+---
+
+## 🧪 Deployment
+
+### Local Startup
 
 ```bash
 cp .env.example .env
 php -S 127.0.0.1:8080 -t public
-```
-
-### Production
-
-- Exposer `public/` comme document root.
-- Configurer `APP_URL` avec l'URL publique.
-- Vérifier les droits d'écriture sur `var/cache` et `var/data`.
-- Ne pas exposer la racine du dépôt sur le web.
-
-## Fichiers de gouvernance
-
-- `PERSONAL_DATA.md`
-- `CONTRIBUTING.md`
-- `SECURITY.md`
-- `CHANGELOG.md`
-
----
-
-## EN - Technical documentation (summary)
-
-Live demo: https://sympli.rss-fusion.com/
-
-### 🏗️ Architecture
-
-- Front controller: `public/index.php`
-- HTTP router: `RssFusionKiss\Http\App`
-- Idempotent installer: `RssFusionKiss\Installer`
-- Error logger: `RssFusionKiss\Support\Logger`
-- SQLite persistence: `RssFusionKiss\Persistence\*`
-- Aggregation: `RssFusionKiss\Service\FeedAggregator`
-- Feed fetch/parsing + preview: `RssFusionKiss\Service\FeedFetcher`
-- XML cache: `RssFusionKiss\Service\CacheService`
-- JSON i18n: `RssFusionKiss\I18n\Translator`
-
-### 🔒 Web root
-
-Web root must target `public/` to keep sensitive files out of direct HTTP access (`.env`, `var/data`, `var/log`, `src`).
-
-### 🛣️ Main routes
-
-- `GET /`, `POST /create`, `POST /import-master`
-- `GET /export-master?token=...`
-- `GET|POST /manage/{token}`
-- `POST /manage/{token}/delete`
-- `GET /manage/{token}/export`
-- `POST /manage/{token}/import`
-- `GET /preview-source?url=...`
-- `GET /rss/{token}`
-- `GET /privacy`
-
-### Security model
-
-- No user account.
-- Access is based on an unguessable 48-char hex token.
-- Token generation uses `random_bytes(24)`.
-
-### ⚙️ Runtime behavior
-
-- Auto-installs on first request (`.env`, folders, SQLite schema).
-- `dev` mode enables detailed errors and dedicated DB/logging.
-- Optional auto-prune for inactive feeds.
-- XML cache invalidation on TTL expiry and feed changes.
-
-### 🔄 Version check
-
-When enabled with `VERSION_CHECK_ENABLED=1`, the app compares local `VERSION` with:
-
-- `https://raw.githubusercontent.com/GreenEffect/Sympli-RSS-Fusion/refs/heads/main/VERSION`
-
-and shows an update notice in footer if remote version is newer.
-
-### 🌐 Production notes
-
-- Expose `public/` as document root.
-- Configure `APP_URL` with public URL.
-- Ensure write permissions on `var/cache` and `var/data`.
-- Never expose repository root over HTTP.
