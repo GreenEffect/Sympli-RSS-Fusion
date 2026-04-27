@@ -2,7 +2,7 @@
 
 All notable changes to Sympli RSS Fusion will be documented in this file.
 
-## [1.0.0] - 2026-04-23
+## [1.0.0] - 2026-04-27
 
 ### Added
 
