@@ -11,7 +11,6 @@
 
 # Sympli RSS Fusion
 
-<!-- Après le logo -->
 <p align="center">
   <img src="docs/screenshot/rssfusion.png" alt="Thème RSS Fusion" width="48%" />
   <img src="docs/screenshot/dashboard.png" alt="Thème Dashboard" width="48%" />
@@ -25,11 +24,11 @@
 
 Sympli RSS Fusion est une application PHP auto-hébergeable pour fusionner plusieurs flux RSS/Atom en un flux master unique. Il s'agit d'une version "lite" et autonome de [RSS Fusion](https://www.rss-fusion.fr).
 
-Démo en ligne: https://sympli.rss-fusion.com/
+Démo en ligne : https://sympli.rss-fusion.com/
 
 ## 🧩 Approche KISS
 
-Le projet reste volontairement simple: un front controller unique (`public/index.php`) et pas de dépendance Composer obligatoire.
+Le projet reste volontairement simple : un front controller unique (`public/index.php`) et pas de dépendance (par exemple, Composer) obligatoire.
 
 Le webroot doit pointer sur `public/`.
 Ce choix protège automatiquement les fichiers sensibles hors web (`.env`, `var/data` SQLite, logs, source PHP).
@@ -37,13 +36,13 @@ Ce choix protège automatiquement les fichiers sensibles hors web (`.env`, `var/
 ## ✨ Fonctionnalités
 
 - Fusion de plusieurs sources RSS/Atom dans un flux master.
-- Filtres par source: black words et star words (titre/description/contenu).
+- Filtres par source : black words et star words (titre/description/contenu).
 - Prévisualisation source avec prise en compte immédiate des règles de filtrage.
 - Import/export JSON depuis la page d'entrée et la page de gestion.
 - Suppression manuelle d'un flux depuis l'UI.
 - Suppression automatique optionnelle des flux inactifs.
 - Interface multilingue FR/EN extensible via JSON.
-- Themes configurables: `default`, `basic`, `dashboard`, `tiles`.
+- Themes configurables : `default`, `basic`, `dashboard`, `tiles`.
 - Mode `dev` (erreurs détaillées, logs, DB dédiée).
 - Pages d'erreur 404/500 + page Données personnelles.
 - Vérification optionnelle de version distante avec alerte de mise à jour dans le footer.
@@ -62,9 +61,9 @@ Puis ouvrir `http://127.0.0.1:8080`.
 Déjà un serveur web ?
 Déposez les fichiers du projet puis pointez la racine web vers le dossier `public`.
 
-- Apache: `DocumentRoot /chemin/vers/Sympli-RSS-Fusion/public`
-- Nginx: `root /chemin/vers/Sympli-RSS-Fusion/public;`
-- Mutualisé: dans le panneau d'hébergement, définir le "document root" du domaine sur `.../public`
+- Apache : `DocumentRoot /chemin/vers/Sympli-RSS-Fusion/public`
+- Nginx : `root /chemin/vers/Sympli-RSS-Fusion/public;`
+- Mutualisé : dans le panneau d'hébergement, définir le "document root" du domaine sur `.../public`
 
 ```bash
 cp .env.example .env
@@ -74,18 +73,18 @@ Ensuite, ouvrez l'URL du domaine.
 
 ## ⚙️ Configuration .env
 
-- `APP_NAME`: nom du projet (par défaut `Sympli RSS Fusion`).
-- `APP_URL`: URL publique.
-- `APP_LANG`: `fr` ou `en` (ou autre JSON dans `config/lang`).
-- `APP_THEME`: `default`, `basic`, `dashboard`, `tiles` (ou thème custom).
-- `APP_ENV`: `prod` ou `dev`.
-- `DB_PATH`: base SQLite prod.
-- `DB_PATH_DEV`: base SQLite dev.
-- `LOG_PATH`: fichier de logs.
+- `APP_NAME` : nom du projet (par défaut `Sympli RSS Fusion`).
+- `APP_URL` : URL publique.
+- `APP_LANG` : `fr` ou `en` (ou autre JSON dans `config/lang`).
+- `APP_THEME` : `default`, `basic`, `dashboard`, `tiles` (ou thème custom).
+- `APP_ENV` : `prod` ou `dev`.
+- `DB_PATH` : base SQLite prod.
+- `DB_PATH_DEV` : base SQLite dev.
+- `LOG_PATH` : fichier de logs.
 - `CACHE_DIR`, `CACHE_TTL`, `HTTP_TIMEOUT`, `MAX_ITEMS`.
 - `AUTO_PRUNE_ENABLED`, `AUTO_PRUNE_DAYS`.
 - `PREVIEW_ITEMS`.
-- `VERSION_CHECK_ENABLED`: `1` pour activer la vérification de version distante (désactivé par défaut).
+- `VERSION_CHECK_ENABLED` : `1` pour activer la vérification de version distante (désactivé par défaut).
 
 ## 🛣️ Routes
 
@@ -108,12 +107,13 @@ Ensuite, ouvrez l'URL du domaine.
 
 ## 📚 Documentation projet
 
-- Installation détaillée: `docs/INSTALL.md`
-- Technique: `docs/DOCUMENTATION.md`
-- Données personnelles: `PERSONAL_DATA.md`
-- Contribuer: `CONTRIBUTING.md`
-- Sécurité: `SECURITY.md`
-- Historique: `CHANGELOG.md`
+- Installation détaillée : `docs/INSTALL.md`
+- Technique : `docs/DOCUMENTATION.md`
+- Evolutions envisagées : `docs/ROADMAP.md`
+- Données personnelles : `PERSONAL_DATA.md`
+- Contribuer : `CONTRIBUTING.md`
+- Sécurité : `SECURITY.md`
+- Historique : `CHANGELOG.md`
 
 ---
 
@@ -200,6 +200,7 @@ Deploy project files and point your webroot to `public`.
 
 - Installation: `docs/INSTALL.md`
 - Technical: `docs/DOCUMENTATION.md`
+- Planned developments : `docs/ROADMAP.md`
 - Personal data: `PERSONAL_DATA.md`
 - Contributing: `CONTRIBUTING.md`
 - Security: `SECURITY.md`
