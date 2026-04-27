@@ -115,6 +115,8 @@ Ensuite, ouvrez l'URL du domaine.
 - Sécurité : `SECURITY.md`
 - Historique : `CHANGELOG.md`
 
+*structure initiale du repository générée avec Claude.ai*
+
 ---
 
 ## EN
