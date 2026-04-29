@@ -77,11 +77,15 @@ $pageTitle = $t('manage.page_title') . ' - ' . (string) $feed['title'];
                 </div>
             </div>
 
+            <div id="sources">
             <?php foreach ($feed['sources'] as $i => $source): ?>
                 <article class="source-block">
                     <div class="source-header">
-                        <h3><?= htmlspecialchars($t('ui.source')) ?> <?= $i + 1 ?></h3>
-                        <button type="button" class="secondary" onclick="previewSource(this)"><?= htmlspecialchars($t('source.preview')) ?></button>
+                        <h3><?= htmlspecialchars($t('ui.source')) ?> <span class="index"><?= $i + 1 ?></span></h3>
+                        <div class="source-actions">
+                            <button type="button" class="secondary" onclick="previewSource(this)"><?= htmlspecialchars($t('source.preview')) ?></button>
+                            <button type="button" class="danger" onclick="removeSource(this)"><?= htmlspecialchars($t('source.remove')) ?></button>
+                        </div>
                     </div>
                     <div class="grid">
                         <div>
@@ -118,6 +122,8 @@ $pageTitle = $t('manage.page_title') . ' - ' . (string) $feed['title'];
                     <div class="preview-box" hidden></div>
                 </article>
             <?php endforeach; ?>
+            </div>
+            <button type="button" class="secondary" onclick="addSource()"><?= htmlspecialchars($t('form.add_source')) ?></button>
             <button type="submit"><?= htmlspecialchars($t('manage.save')) ?></button>
         </form>
     </section>
@@ -227,6 +233,83 @@ copyBtn.addEventListener('click', async () => {
         copyFeedback.textContent = t('manage.copy_failed');
     }
 });
+</script>
+<template id="source-template">
+    <article class="source-block">
+        <div class="source-header">
+            <h3><?= htmlspecialchars($t('ui.source')) ?> <span class="index"></span></h3>
+            <div class="source-actions">
+                <button type="button" class="secondary" onclick="previewSource(this)"><?= htmlspecialchars($t('source.preview')) ?></button>
+                <button type="button" class="danger" onclick="removeSource(this)"><?= htmlspecialchars($t('source.remove')) ?></button>
+            </div>
+        </div>
+        <div class="grid">
+            <div>
+                <label><?= htmlspecialchars($t('source.name')) ?></label>
+                <input type="text" name="source_name[]" required>
+            </div>
+            <div>
+                <label><?= htmlspecialchars($t('source.url')) ?></label>
+                <input type="url" name="source_url[]" required placeholder="https://example.com/feed.xml">
+            </div>
+        </div>
+        <div class="grid">
+            <div>
+                <label><?= htmlspecialchars($t('source.black_words')) ?></label>
+                <input type="text" name="black_words[]" placeholder="ads, Elon Musk, botshit">
+            </div>
+            <div class="checks">
+                <label><input type="checkbox" name="black_target_title[index]" checked><?= htmlspecialchars($t('target.title')) ?></label>
+                <label><input type="checkbox" name="black_target_description[index]" checked><?= htmlspecialchars($t('target.description')) ?></label>
+                <label><input type="checkbox" name="black_target_content[index]"><?= htmlspecialchars($t('target.content')) ?></label>
+            </div>
+        </div>
+        <div class="grid">
+            <div>
+                <label><?= htmlspecialchars($t('source.star_words')) ?></label>
+                <input type="text" name="star_words[]" placeholder="php, privacy, Framasoft, datalove">
+            </div>
+            <div class="checks">
+                <label><input type="checkbox" name="star_target_title[index]" checked><?= htmlspecialchars($t('target.title')) ?></label>
+                <label><input type="checkbox" name="star_target_description[index]" checked><?= htmlspecialchars($t('target.description')) ?></label>
+                <label><input type="checkbox" name="star_target_content[index]"><?= htmlspecialchars($t('target.content')) ?></label>
+            </div>
+        </div>
+        <div class="preview-box" hidden></div>
+    </article>
+</template>
+
+<script>
+const sourcesRoot = document.getElementById('sources');
+const tpl = document.getElementById('source-template');
+
+function syncIndices() {
+    if (!sourcesRoot) return;
+    [...sourcesRoot.querySelectorAll('.source-block')].forEach((block, idx) => {
+        const indexEl = block.querySelector('.index');
+        if (indexEl) indexEl.textContent = idx + 1;
+        block.querySelectorAll('input[type="checkbox"]').forEach((input) => {
+            input.name = input.name.replace(/\[\d+\]/, '[' + idx + ']').replace('[index]', '[' + idx + ']');
+        });
+    });
+}
+
+function addSource() {
+    if (!tpl || !sourcesRoot) return;
+    const clone = tpl.content.cloneNode(true);
+    sourcesRoot.appendChild(clone);
+    syncIndices();
+}
+
+function removeSource(button) {
+    const article = button.closest('.source-block');
+    if (!article) return;
+    article.remove();
+    syncIndices();
+}
+
+// Ensure indices are correct on load
+syncIndices();
 </script>
 </body>
 </html>
