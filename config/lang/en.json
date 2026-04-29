@@ -10,6 +10,7 @@
   "error.opml_invalid": "Invalid OPML file.",
   "error.opml_no_sources": "No valid RSS sources found in OPML file.",
   "error.opml_too_large": "OPML file is too large.",
+  "error.import_too_large": "Uploaded import file is too large.",
   "error.invalid_csrf": "Session expired or invalid request. Reload the page and try again.",
   "error.invalid_url": "Invalid URL.",
   "error.master_token_required": "Please provide a valid feed URL/token to export.",

@@ -34,6 +34,7 @@ final class App
     private const VERSION_REMOTE_URL = 'https://raw.githubusercontent.com/GreenEffect/Sympli-RSS-Fusion/refs/heads/main/VERSION';
     private const VERSION_REPO_URL = 'https://github.com/GreenEffect/Sympli-RSS-Fusion';
     private const OPML_MAX_BYTES = 1048576;
+    private const JSON_MAX_BYTES = 1048576;
 
     private ?bool $versionUpdateAvailable = null;
     private ?string $localVersionMarker = null;
@@ -636,6 +637,27 @@ final class App
             return null;
         }
 
+        if ((int) ($file['size'] ?? 0) > self::JSON_MAX_BYTES) {
+            $error = $this->translator->t('error.import_too_large');
+            return null;
+        }
+
+        $mime = '';
+        if (function_exists('finfo_open')) {
+            $finfo = finfo_open(FILEINFO_MIME_TYPE);
+            if ($finfo !== false) {
+                $mime = (string) finfo_file($finfo, $tmpPath);
+                finfo_close($finfo);
+            }
+        }
+
+        if ($mime !== '') {
+            $allowed = ['application/json', 'text/json', 'application/octet-stream', 'text/plain'];
+            if (!in_array(strtolower($mime), $allowed, true)) {
+                $error = $this->translator->t('error.import_invalid_json');
+                return null;
+            }
+        }
         $raw = file_get_contents($tmpPath);
         if ($raw === false || trim($raw) === '') {
             $error = $this->translator->t('error.import_invalid_json');

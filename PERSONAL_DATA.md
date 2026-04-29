@@ -27,6 +27,8 @@ Sympli RSS Fusion est pensé pour minimiser la collecte de données.
 - L'application met en œuvre des contrôles lors de la récupération de flux externes pour éviter l'accès non intentionnel à des ressources internes (SSRF). Seuls les schémas `http`/`https` sont autorisés, et les adresses privées/localhost sont bloquées après résolution DNS.
 - Les entités externes dans les documents XML sont désactivées pour prévenir les fuites via XXE.
 
+ - Les fichiers JSON importés via l'interface sont également validés et limités à 1 MiB afin de réduire le risque d'attaques par déni de service via des téléversements volumineux.
+
 ## Hébergement
 
 Les données restent sur votre infrastructure (self-hosted), selon votre configuration serveur.
@@ -58,3 +60,7 @@ Sympli RSS Fusion is designed to minimize data collection.
 ### Hosting
 
 Data remains on your own infrastructure (self-hosted), depending on your server configuration.
+
+### Additional protections
+
+- Uploaded JSON import files are validated and capped at 1 MiB to reduce the risk of denial-of-service attacks through oversized uploads.

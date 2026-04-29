@@ -23,6 +23,10 @@ Solutions envisagées :
 Un ensemble de protections contre les risques SSRF et XXE a été déployé dans la version 1.1.0 :
 - restrictions de schéma (`http`/`https` seulement), résolution DNS et blocage d'adresses privées/localhost, requêtes via `cURL` avec limites (1 MiB) et timeouts, et désactivation des entités externes XML.
 
+### Import JSON sécurisé — status : implémenté
+
+Les imports JSON via l'interface web sont maintenant limités à 1 MiB et font l'objet d'une validation du type MIME pour réduire le risque d'attaques par déni de service par fichiers volumineux.
+
 Ces protections peuvent évoluer (support optionnel de listes blanches, journalisation plus fine, ou mode opérateur pour environnements contrôlés).
 
 ---

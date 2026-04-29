@@ -28,6 +28,7 @@ Concrètement, ce choix évite d'exposer:
 - PHP setting / extensions required:
   - `curl` extension (required for secure HTTP fetching of feeds)
   - `allow_url_fopen` is no longer required for feed fetching (the application uses cURL internally)
+  - PHP upload settings: `upload_max_filesize` and `post_max_size` should be configured to allow uploads of at least `1M` (we recommend `2M`) to support import operations via the web UI.
 - HTTPS support for remote requests (OpenSSL enabled in PHP).
 - Write permissions on:
   - `var/data`
@@ -374,3 +375,5 @@ Additional import/export routes available (besides JSON):
 - `GET /export-master-opml?token=...`
 - `GET /manage/{token}/export-opml`
 - `POST /manage/{token}/import-opml`
+
+Note: JSON import uploads via the web UI are restricted to 1 MiB and the uploaded file's MIME/type is validated by the application. If you encounter "file too large" errors during import, verify `upload_max_filesize` and `post_max_size` in your PHP configuration.

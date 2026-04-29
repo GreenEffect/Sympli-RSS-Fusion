@@ -16,6 +16,10 @@ All notable changes to Sympli RSS Fusion will be documented in this file.
 
  - Bumped project version to `1.1.0` and added release notes.
 
+### Security
+
+ - Validation for JSON import uploads: file size capped at 1 MiB and MIME/type checked to mitigate denial-of-service via oversized uploads.
+
 ## [1.0.0] - 2026-04-27
 
 ### Added
@@ -57,3 +61,4 @@ All notable changes to Sympli RSS Fusion will be documented in this file.
 	 - hosts resolved and private/localhost addresses blocked (RFC1918, 127.0.0.0/8, IPv6 ULA/link-local);
 	 - feed fetches via `cURL` with timeouts and 1 MiB size cap;
 	 - external XML entities disabled (`LIBXML_NONET`, `libxml_disable_entity_loader`).
+

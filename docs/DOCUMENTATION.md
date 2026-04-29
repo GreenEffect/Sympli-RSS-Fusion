@@ -45,6 +45,12 @@ The web root **must** target `public/` to prevent HTTP exposure of sensitive fil
   - HTTP fetches use `cURL` with timeouts and a size cap (1 MiB);
   - XML parsing disables external entity resolution (`LIBXML_NONET`, `libxml_disable_entity_loader`).
 
+Additional note:
+
+- FR: Les imports JSON téléversés via l'interface sont maintenant limités à 1 MiB et subissent une validation du type MIME pour réduire le risque d'attaques par déni de service via des fichiers volumineux.
+
+- EN: Uploaded JSON import files via the UI are now capped at 1 MiB and undergo MIME/type validation to reduce the risk of denial-of-service attacks using oversized uploads.
+
 
 ## 🛣️ Routes
    Method | Route | Description |

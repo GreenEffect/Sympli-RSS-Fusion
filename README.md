@@ -50,6 +50,7 @@ Ce choix protège automatiquement les fichiers sensibles hors web (`.env`, `var/
 	- seules les URLs `http`/`https` sont acceptées;
 	- résolution DNS + blocage d'adresses privées/localhost pour prévenir SSRF;
 	- parsing XML avec entités externes désactivées pour prévenir XXE.
+	- les imports JSON téléversés via l'interface sont limités à 1 MiB et le type MIME est vérifié pour éviter les téléversements volumineux malveillants.
 
 ## 🚀 Installation rapide
 
@@ -155,6 +156,8 @@ This protects sensitive files from direct web access (`.env`, SQLite data in `va
 	- only `http`/`https` URLs are accepted;
 	- hosts are resolved and private/localhost addresses are blocked;
 	- XML parsing disables external entities to avoid XXE.
+
+	- Uploaded JSON import files via the web UI are capped at 1 MiB and the file MIME/type is validated to mitigate oversized malicious uploads.
 
 ### 🚀 Quick install
 
