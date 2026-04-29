@@ -27,7 +27,8 @@ final class FeedAggregator
 {
     public function __construct(
         private readonly FeedFetcher $fetcher,
-        private readonly int $maxItems
+        private readonly int $maxItems,
+        private readonly \RssFusionKiss\Persistence\FeedRepository $repository
     ) {
     }
 
@@ -40,7 +41,32 @@ final class FeedAggregator
         $items = [];
 
         foreach ($feed['sources'] as $source) {
-            $sourceItems = $this->fetcher->fetchItems((string) $source['url']);
+            $conditional = [];
+            if (!empty($source['etag'])) {
+                $conditional['etag'] = (string) $source['etag'];
+            }
+            if (!empty($source['last_modified'])) {
+                $conditional['last_modified'] = (string) $source['last_modified'];
+            }
+
+            $res = $this->fetcher->fetchItems((string) $source['url'], $conditional);
+            if (!is_array($res)) {
+                continue;
+            }
+
+            if (!empty($res['not_modified'])) {
+                // nothing new for this source
+                continue;
+            }
+
+            $sourceItems = $res['items'] ?? [];
+
+            // update stored metadata if available
+            if (!empty($source['id'])) {
+                $etag = isset($res['etag']) ? $res['etag'] : null;
+                $lastMod = isset($res['last_modified']) ? $res['last_modified'] : null;
+                $this->repository->updateSourceMetadata((int) $source['id'], $etag, $lastMod);
+            }
             foreach ($sourceItems as $item) {
                 $dedupeKey = $item['id'] ?: ($item['link'] ?: md5(($item['title'] ?? '') . ($item['published_at'] ?? 0)));
                 if (isset($seen[$dedupeKey])) {

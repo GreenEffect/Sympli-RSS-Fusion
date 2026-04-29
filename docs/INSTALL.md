@@ -94,6 +94,14 @@ Le bootstrap lance une installation idempotente:
 - création des dossiers de travail (`var/cache`, `var/data`, `var/log` selon config),
 - application du schéma SQLite (`config/schema.sql`) si nécessaire.
 
+Si vous mettez à jour une instance existante pour bénéficier du support ETag/If-Modified-Since, exécutez le script de migration (idempotent) qui ajoute les colonnes nécessaires sans supprimer les données existantes :
+
+```bash
+php bin/migrate_add_source_metadata.php var/data/sympli_rss_fusion.sqlite
+```
+
+Le script crée une sauvegarde du fichier SQLite avant modification (fichier `.backup.YYYYmmdd_HHMMSS`).
+
 Aucune étape Composer n'est requise.
 
 ### 7. Vérifications rapides
@@ -169,6 +177,7 @@ Si vous avez déjà un serveur web opérationnel, le chemin le plus simple est:
 - Impossible de récupérer les flux externes:
   - vérifier internet sortant, DNS, SSL, et l'extension `curl` de PHP.
   - note: l'application effectue des contrôles supplémentaires (schéma http(s), résolution DNS et filtrage d'adresses privées) ; si une URL est refusée elle peut être bloquée pour des raisons de sécurité.
+   - Si vous venez d'effectuer une mise à jour et que la colonne `etag`/`last_modified` manque, exécutez `php bin/migrate_add_source_metadata.php var/data/sympli_rss_fusion.sqlite` pour appliquer la migration en toute sécurité.
 - Vérification de version inactive:
   - vérifier `VERSION_CHECK_ENABLED=1` dans `.env`.
 

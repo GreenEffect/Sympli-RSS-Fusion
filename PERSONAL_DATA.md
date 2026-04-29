@@ -33,6 +33,12 @@ Les journaux peuvent contenir des informations techniques (messages d'erreur, tr
 
 Les écritures des fichiers de cache et des journaux sont réalisées de façon atomique et via des verrous de fichier pour réduire le risque de corruption en cas d'accès concurrents.
 
+### Métadonnées de source (ETag / Last-Modified)
+
+- FR: Le projet conserve désormais, pour chaque source, des métadonnées techniques optionnelles `etag` et `last_modified` afin d'autoriser des requêtes HTTP conditionnelles. Ces champs sont purement techniques et ne contiennent pas d'informations personnelles sur les utilisateurs. Ils servent uniquement à optimiser les récupérations réseau et peuvent être ajoutés à une base existante via un script de migration (créant une sauvegarde préalable).
+
+- EN: The project now stores optional per-source technical metadata `etag` and `last_modified` to enable conditional HTTP requests. These fields are purely technical and do not contain personal data about users. They are used solely to optimize network fetching and can be added to an existing database via a migration script (which creates a backup beforehand).
+
 ### Limitation de débit / Rate limiting
 
 Une limitation de débit côté serveur a été ajoutée pour les endpoints sensibles (prévisualisation, création, import/export). Le système utilise l'adresse IP du client comme identifiant, mais les compteurs sont stockés sous forme de fichiers hachés dans `var/rate/` contenant uniquement un `count` et un `start` (horodatage). Aucune autre information personnelle n'est enregistrée, et ces compteurs sont de courte durée selon la fenêtre configurée.

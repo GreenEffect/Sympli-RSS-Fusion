@@ -39,9 +39,9 @@ Une protection par rate-limiting simple a été ajoutée pour les endpoints sens
 ## ⚡ Performance
 
 ### Cache conditionnel avec ETag / Last-Modified
-**Priorité : haute**
+**Priorité : haute — status : implémenté**
 
-Actuellement le cache est binaire : valide ou expiré. Ajouter des en-têtes HTTP `ETag` et `Last-Modified` sur les endpoints `/feed/{token}` permettrait aux agrégateurs RSS de faire des requêtes conditionnelles (`If-None-Match`, `If-Modified-Since`) et d'économiser de la bande passante sans toucher au cache fichier.
+Le support des requêtes conditionnelles (`If-None-Match` / `If-Modified-Since`) a été implémenté : les valeurs `etag` et `last_modified` sont maintenant conservées par source et utilisées lors des récupérations. Un script de migration idempotent (`bin/migrate_add_source_metadata.php`) permet d'ajouter les colonnes nécessaires aux bases existantes sans perte de données.
 
 ### Écritures atomiques et verrouillage
 **Priorité : basse — status : implémenté**

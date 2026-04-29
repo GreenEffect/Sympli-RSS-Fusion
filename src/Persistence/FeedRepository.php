@@ -187,9 +187,11 @@ final class FeedRepository
             'INSERT INTO sources (
                 feed_id, name, url, black_words, black_target_title, black_target_description, black_target_content,
                 star_words, star_target_title, star_target_description, star_target_content, sort_order
+            , etag, last_modified
             ) VALUES (
                 :feed_id, :name, :url, :black_words, :black_target_title, :black_target_description, :black_target_content,
-                :star_words, :star_target_title, :star_target_description, :star_target_content, :sort_order
+                :star_words, :star_target_title, :star_target_description, :star_target_content, :sort_order,
+                :etag, :last_modified
             )'
         );
 
@@ -207,7 +209,19 @@ final class FeedRepository
                 ':star_target_description' => !empty($source['star_target_description']) ? 1 : 0,
                 ':star_target_content' => !empty($source['star_target_content']) ? 1 : 0,
                 ':sort_order' => $index,
+                ':etag' => (string) ($source['etag'] ?? ''),
+                ':last_modified' => (string) ($source['last_modified'] ?? ''),
             ]);
         }
+    }
+
+    public function updateSourceMetadata(int $sourceId, ?string $etag, ?string $lastModified): void
+    {
+        $stmt = $this->pdo->prepare('UPDATE sources SET etag = :etag, last_modified = :last_modified WHERE id = :id');
+        $stmt->execute([
+            ':etag' => $etag ?? '',
+            ':last_modified' => $lastModified ?? '',
+            ':id' => $sourceId,
+        ]);
     }
 }

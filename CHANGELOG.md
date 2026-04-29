@@ -13,6 +13,8 @@ All notable changes to Sympli RSS Fusion will be documented in this file.
  - Display application version in the footer
  - Basic application logger: `src/Support/Logger.php` provides `log()`, `info()`, `warning()`, `error()` and `debug()` methods and writes to the file defined by `LOG_PATH` (default `var/log/app.log`). Writes are atomic and use `flock`. No automatic rotation is included — configure rotation externally (eg. `logrotate`).
 
+ - Added support for conditional HTTP fetches using `ETag` / `If-Modified-Since`. Per-source metadata (`etag`, `last_modified`) are stored and used to perform conditional requests; a migration script `bin/migrate_add_source_metadata.php` is provided to add these columns on existing databases without data loss.
+
 ### Changed
 
  - Bumped project version to `1.1.0` and added release notes.

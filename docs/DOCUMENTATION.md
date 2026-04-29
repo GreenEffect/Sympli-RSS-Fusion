@@ -158,6 +158,12 @@ Configure in `.env`:
 
   Note: Cache and log writes use atomic write (temp file + rename) and file locking to avoid corruption under concurrent access.
 
+## Conditional fetching (ETag / Last-Modified)
+
+- FR: Depuis la version 1.1.0 l'application supporte désormais les requêtes conditionnelles pour réduire la consommation réseau: les métadonnées `ETag` et `Last-Modified` sont conservées par source et utilisées pour envoyer `If-None-Match` / `If-Modified-Since` lors des récupérations ultérieures. Un script de migration idempotent est fourni (`bin/migrate_add_source_metadata.php`) pour ajouter les colonnes `etag` et `last_modified` aux sources existantes sans perte de données.
+
+- EN: Since 1.1.0 the application supports conditional HTTP requests to save bandwidth: per-source `ETag` and `Last-Modified` values are stored and used to send `If-None-Match` / `If-Modified-Since` on subsequent fetches. An idempotent migration script is available (`bin/migrate_add_source_metadata.php`) to add `etag` and `last_modified` columns to existing sources without data loss.
+
 ---
 
 ## SQLite Database

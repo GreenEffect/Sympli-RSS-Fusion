@@ -38,6 +38,8 @@ Ce choix protège automatiquement les fichiers sensibles hors web (`.env`, `var/
 - Fusion de plusieurs sources RSS/Atom dans un flux master.
 - Filtres par source : black words et star words (titre/description/contenu).
 - Prévisualisation source avec prise en compte immédiate des règles de filtrage.
+ - Prévisualisation source avec prise en compte immédiate des règles de filtrage.
+ - Support des requêtes conditionnelles HTTP (`ETag` / `If-Modified-Since`) pour économiser la bande passante lors des récupérations de sources (migration script: `bin/migrate_add_source_metadata.php`).
 - Import/export JSON depuis la page d'entrée et la page de gestion.
 - Suppression manuelle d'un flux depuis l'UI.
 - Suppression automatique optionnelle des flux inactifs.
@@ -148,6 +150,8 @@ This protects sensitive files from direct web access (`.env`, SQLite data in `va
 - Merge multiple RSS/Atom sources into one master feed.
 - Per-source filters: black words and star words (title/description/content).
 - Source preview with immediate filtering feedback.
+ - Source preview with immediate filtering feedback.
+ - Support for conditional HTTP requests (`ETag` / `If-Modified-Since`) to save bandwidth when fetching sources (migration script: `bin/migrate_add_source_metadata.php`).
 - JSON import/export from home and management pages.
 - Manual feed deletion from UI.
 - Optional automatic pruning of inactive feeds.
