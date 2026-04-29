@@ -106,6 +106,7 @@
   "ui.back_home": "Retour à l'accueil",
   "ui.preview_loading": "Chargement de la prévisualisation...",
   "ui.preview_error": "Erreur pendant la prévisualisation.",
+  "error.rate_limited": "Trop de requêtes. Réessayez dans {retry_after} secondes.",
   "ui.preview_empty": "Aucun élément détecté.",
   "ui.preview_feed": "Flux source:",
   "ui.preview_untitled_item": "Sans titre",

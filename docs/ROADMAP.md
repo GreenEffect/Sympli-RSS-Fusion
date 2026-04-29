@@ -29,6 +29,11 @@ Les imports JSON via l'interface web sont maintenant limités à 1 MiB et font
 
 Ces protections peuvent évoluer (support optionnel de listes blanches, journalisation plus fine, ou mode opérateur pour environnements contrôlés).
 
+### Limitation de débit / Rate limiting
+**Priorité : haute — status : implémenté**
+
+Une protection par rate-limiting simple a été ajoutée pour les endpoints sensibles (prévisualisation, création, import/export). Elle vise à réduire les abus et la charge serveur. Les compteurs sont stockés sous `var/rate/`.
+
 ---
 
 ## ⚡ Performance

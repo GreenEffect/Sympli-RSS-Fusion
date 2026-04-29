@@ -62,18 +62,19 @@ Copy-Item .env.example .env
 
 Minimum recommandé:
 
-- `APP_URL=http://127.0.0.1:8080`
-- `APP_ENV=prod` (ou `dev` pour debug)
-- `APP_LANG=fr` (ou `en`)
-- `APP_THEME=default`
 
 Configuration importante:
 
-- `DB_PATH=var/data/sympli_rss_fusion.sqlite`
-- `DB_PATH_DEV=var/data/sympli_rss_fusion_dev.sqlite`
-- `LOG_PATH=var/log/app.log`
-- `VERSION_CHECK_ENABLED=0` (désactivé par défaut)
   - passer à `1` pour activer la vérification de nouvelle version GitHub.
+
+Important runtime note:
+
+Rate-limiter configuration (optional):
+
+- `RATE_FILE_TTL`: seconds after which individual rate files are eligible for purge (default `3600`).
+- `RATE_PURGE_FREQUENCY`: minimum seconds between automatic purge runs (default `3600`).
+
+Both can be set in your `.env` to tune purge behaviour.
 
 ### ▶️ 5. Démarrer l'application (local)
 

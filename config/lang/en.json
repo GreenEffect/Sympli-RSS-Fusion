@@ -106,6 +106,7 @@
   "ui.back_home": "Back to home",
   "ui.preview_loading": "Loading preview...",
   "ui.preview_error": "Error while previewing feed.",
+  "error.rate_limited": "Too many requests. Try again in {retry_after} seconds.",
   "ui.preview_empty": "No items found.",
   "ui.preview_feed": "Source feed:",
   "ui.preview_untitled_item": "Untitled",

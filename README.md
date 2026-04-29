@@ -52,6 +52,9 @@ Ce choix protège automatiquement les fichiers sensibles hors web (`.env`, `var/
 	- parsing XML avec entités externes désactivées pour prévenir XXE.
 	- les imports JSON téléversés via l'interface sont limités à 1 MiB et le type MIME est vérifié pour éviter les téléversements volumineux malveillants.
 	- les écritures du cache et des logs sont désormais atomiques (fichier temporaire + renommage) et utilisent un verrouillage de fichier pour éviter la corruption en cas d'accès concurrents.
+	- un mécanisme de limitation de débit (rate-limiter) protège désormais les endpoints sensibles (prévisualisation, création, import/export). Les compteurs sont stockés côté serveur dans `var/rate/` (fichiers hachés contenant `count` et `start`) et une réponse HTTP 429 est renvoyée quand la limite est dépassée.
+
+	Configuration optionnelle (via `.env`): `RATE_FILE_TTL` (seconds before rate file eligible for purge, default 3600) et `RATE_PURGE_FREQUENCY` (minimum seconds between purges, default 3600).
 
 ## 🚀 Installation rapide
 
@@ -161,6 +164,10 @@ This protects sensitive files from direct web access (`.env`, SQLite data in `va
 	- Uploaded JSON import files via the web UI are capped at 1 MiB and the file MIME/type is validated to mitigate oversized malicious uploads.
 
 	- Cache and log writes are performed atomically (temp file + rename) and use file locking to avoid corruption under concurrent access.
+
+	- A simple server-side rate limiter now protects sensitive endpoints (preview, create, import/export). Counters are stored in `var/rate/` as hashed files with `count` and `start`; requests exceeding limits receive HTTP 429 with `Retry-After`.
+
+	Optional configuration via `.env`: `RATE_FILE_TTL` (seconds before rate file eligible for purge, default 3600) and `RATE_PURGE_FREQUENCY` (minimum seconds between purges, default 3600).
 
 ### 🚀 Quick install
 

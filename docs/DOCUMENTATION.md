@@ -45,6 +45,17 @@ The web root **must** target `public/` to prevent HTTP exposure of sensitive fil
   - HTTP fetches use `cURL` with timeouts and a size cap (1 MiB);
   - XML parsing disables external entity resolution (`LIBXML_NONET`, `libxml_disable_entity_loader`).
 
+## 🛡️ Rate limiting / Limitation de débit
+
+- FR: Une protection par rate-limiting est maintenant active pour les endpoints sensibles (prévisualisation, création, import/export). Elle utilise un compteur simple côté serveur, indexé par client (IP) et stocké en petites entrées sous `var/rate/` (fichiers hachés contenant un `count` et un `start`). Les paramètres par défaut limitent par exemple `/preview-source` à 30 requêtes / 60s et `/create` à 10 requêtes / 60s. Ceci réduit les abus et la charge serveur.
+
+- EN: A simple server-side rate limiter is now active for sensitive endpoints (preview, create, import/export). It stores small per-client counters under `var/rate/` (hashed files containing `count` and `start`). Defaults include `/preview-source` = 30 reqs/60s and `/create` = 10 reqs/60s. This reduces abuse and server load.
+
+Configuration options (tunable via `.env`):
+
+- `RATE_FILE_TTL` — how long (in seconds) a rate file is considered valid before eligible for purge (default `3600`).
+- `RATE_PURGE_FREQUENCY` — minimum interval (in seconds) between automatic purge runs (default `3600`).
+
 Additional note:
 
 - FR: Les imports JSON téléversés via l'interface sont maintenant limités à 1 MiB et subissent une validation du type MIME pour réduire le risque d'attaques par déni de service via des fichiers volumineux.
