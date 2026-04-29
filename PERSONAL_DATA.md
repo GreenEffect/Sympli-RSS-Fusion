@@ -1,67 +1,18 @@
-# Données personnelles
-
-## FR
-
-Sympli RSS Fusion est pensé pour minimiser la collecte de données.
-
-## Ce qui est stocké
-
-- Configuration des flux master (titre, description, sources, règles de filtrage).
-- Cache XML des flux agrégés.
-- Journaux techniques selon le mode d'exécution (`prod` ou `dev`).
-
-Les journaux peuvent contenir des informations techniques (messages d'erreur, traces d'exception, chemins de fichiers) et sont écrits à l'emplacement défini par `LOG_PATH` dans `.env` (par défaut `var/log/app.log`). Le projet réalise des écritures atomiques et utilise des verrous de fichier pour réduire les risques de corruption, mais la rotation/rétention des journaux n'est pas gérée automatiquement : il est recommandé de configurer un mécanisme de rotation (par ex. `logrotate`) côté hébergeur pour respecter votre politique de conservation des données.
-
-## Ce qui n'est pas imposé
-
-- Aucun compte utilisateur.
-- Aucune base distante obligatoire.
-- Aucun service tiers nécessaire pour fonctionner.
-
-## Controle et suppression
-
-- Suppression manuelle des flux via l'interface.
-- Purge automatique optionnelle des flux inactifs.
-- Suppression locale des fichiers SQLite/cache/logs par l'hébergeur.
-
-### Protection complémentaire
-
-- L'application met en œuvre des contrôles lors de la récupération de flux externes pour éviter l'accès non intentionnel à des ressources internes (SSRF). Seuls les schémas `http`/`https` sont autorisés, et les adresses privées/localhost sont bloquées après résolution DNS.
-- Les entités externes dans les documents XML sont désactivées pour prévenir les fuites via XXE.
-
- - Les fichiers JSON importés via l'interface sont également validés et limités à 1 MiB afin de réduire le risque d'attaques par déni de service via des téléversements volumineux.
-
-Les écritures des fichiers de cache et des journaux sont réalisées de façon atomique et via des verrous de fichier pour réduire le risque de corruption en cas d'accès concurrents.
-
-### Métadonnées de source (ETag / Last-Modified)
-
-- FR: Le projet conserve désormais, pour chaque source, des métadonnées techniques optionnelles `etag` et `last_modified` afin d'autoriser des requêtes HTTP conditionnelles. Ces champs sont purement techniques et ne contiennent pas d'informations personnelles sur les utilisateurs. Ils servent uniquement à optimiser les récupérations réseau et peuvent être ajoutés à une base existante via un script de migration (créant une sauvegarde préalable).
-
-- EN: The project now stores optional per-source technical metadata `etag` and `last_modified` to enable conditional HTTP requests. These fields are purely technical and do not contain personal data about users. They are used solely to optimize network fetching and can be added to an existing database via a migration script (which creates a backup beforehand).
-
-### Limitation de débit / Rate limiting
-
-Une limitation de débit côté serveur a été ajoutée pour les endpoints sensibles (prévisualisation, création, import/export). Le système utilise l'adresse IP du client comme identifiant, mais les compteurs sont stockés sous forme de fichiers hachés dans `var/rate/` contenant uniquement un `count` et un `start` (horodatage). Aucune autre information personnelle n'est enregistrée, et ces compteurs sont de courte durée selon la fenêtre configurée.
-
-## Hébergement
-
-Les données restent sur votre infrastructure (self-hosted), selon votre configuration serveur.
-
----
+# Personal Data / Données personnelles
 
 ## EN
 
 Sympli RSS Fusion is designed to minimize data collection.
 
-### What is stored
+### Stored data
 
-- Master feed configuration (title, description, sources, filtering rules).
+- Master feed configuration (title, description, sources, rules).
 - XML cache of aggregated feeds.
-- Technical logs depending on runtime mode (`prod` or `dev`).
+- Technical logs (`LOG_PATH`, default `var/log/app.log`).
+- Hashed rate-limiting counters in `var/rate/` (`count`, `start`).
+- Per-source technical metadata (`etag`, `last_modified`).
 
-Logs may contain technical information (error messages, exception traces, file paths) and are written to the location defined by `LOG_PATH` in `.env` (default `var/log/app.log`). The project performs atomic writes and uses file locking to reduce the risk of corruption, but it does not implement automatic rotation/retention: configure a rotation/retention mechanism (e.g. `logrotate`) at the host level to meet your data retention policy.
-
-### What is not required
+### Not required
 
 - No user account.
 - No mandatory remote database.
@@ -73,18 +24,50 @@ Logs may contain technical information (error messages, exception traces, file p
 - Optional automatic pruning of inactive feeds.
 - Local deletion of SQLite/cache/log files by the host.
 
+### Technical protections
+
+- External schemes restricted to `http`/`https`.
+- Private/localhost DNS target blocking (SSRF mitigation).
+- XML parser hardening (XXE mitigation).
+- JSON import size cap (1 MiB) and MIME validation.
+- Atomic writes and file locking for cache/log files.
+
 ### Hosting
 
 Data remains on your own infrastructure (self-hosted), depending on your server configuration.
 
-### Additional protections
+## FR
 
-- Uploaded JSON import files are validated and capped at 1 MiB to reduce the risk of denial-of-service attacks through oversized uploads.
+Sympli RSS Fusion est conçu pour minimiser la collecte de données.
 
-Cache and log writes are performed atomically and use file locking to reduce the risk of corruption under concurrent access.
+### Données stockées
 
-Note: logs may include technical details (error messages, traces). They are written to the file configured by `LOG_PATH` (default `var/log/app.log`). The application does not perform automatic log rotation — configure retention/rotation at the host level (e.g. `logrotate`) to meet your data retention and privacy policies.
+- Configuration des flux master (titre, description, sources, règles).
+- Cache XML des flux agrégés.
+- Journaux techniques (`LOG_PATH`, par défaut `var/log/app.log`).
+- Compteurs de rate limiting hachés dans `var/rate/` (`count`, `start`).
+- Métadonnées techniques par source (`etag`, `last_modified`).
 
-### Rate limiting
+### Non requis
 
-A server-side rate limiter protects sensitive endpoints (preview, create, import/export). It uses the client IP as an identifier; however counters are stored as hashed files under `var/rate/` containing only a `count` and a `start` timestamp. No other personal data is recorded and counters are short-lived according to the configured window.
+- Aucun compte utilisateur.
+- Aucune base distante obligatoire.
+- Aucun service tiers obligatoire.
+
+### Contrôle et suppression
+
+- Suppression manuelle des flux via l'interface.
+- Purge automatique optionnelle des flux inactifs.
+- Suppression locale des fichiers SQLite/cache/log par l'hébergeur.
+
+### Protections techniques
+
+- Schémas externes limités à `http`/`https`.
+- Blocage DNS des cibles privées/localhost (mitigation SSRF).
+- Durcissement du parser XML (mitigation XXE).
+- Limite de taille JSON import (1 MiB) et validation MIME.
+- Écritures atomiques et verrouillage de fichier pour cache/log.
+
+### Hébergement
+
+Les données restent sur votre infrastructure (self-hosted), selon votre configuration serveur.

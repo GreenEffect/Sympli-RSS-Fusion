@@ -46,7 +46,9 @@ final class Env
             'APP_THEME' => 'default',
             'PREVIEW_ITEMS' => '4',
             'LOG_PATH' => 'var/log/app.log',
-            'VERSION_CHECK_ENABLED' => '0',
+            'VERSION_CHECK_ENABLED' => '1',
+            'RATE_FILE_TTL' => 3600,
+            'RATE_PURGE_FREQUENCY' => 3600,
         ];
 
         $envPath = $projectRoot . DIRECTORY_SEPARATOR . '.env';

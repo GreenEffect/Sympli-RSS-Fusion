@@ -1,128 +1,51 @@
 # Roadmap — Sympli RSS Fusion
 
-Ce document liste les évolutions envisagées pour le projet, classées par thème et par priorité approximative. Rien n'est gravé dans le marbre : les contributions, retours d'usage et bonnes idées font évoluer les priorités.
+## EN
 
----
+This document tracks future work only.
+Released items are documented exclusively in `CHANGELOG.md`.
 
-## 🔒 Autonomie & vie privée
+### High priority
 
-### Supprimer la dépendance à Google Fonts
-**Priorité : haute**
+- Self-hosted fonts (remove third-party Google Fonts calls).
+- Per-source item limit.
+- Parallel source fetching with `curl_multi_exec`.
 
-Les thèmes chargent actuellement plusieurs polices de caractère via `fonts.googleapis.com`. Ce sont des requêtes tierces qui envoient l'IP du visiteur à Google à chaque chargement de page.
+### Medium priority
 
-Solutions envisagées :
-- Intégrer les fichiers `.woff2` directement dans `public/assets/fonts/`
-- Générer un sous-ensemble minimal (latin uniquement, glyphes utilisés) via [glyphhanger](https://github.com/zachleat/glyphhanger) ou [pyftsubset](https://fonttools.readthedocs.io/)
-- Mettre à jour les `@font-face` dans chaque thème pour pointer vers les fichiers locaux
-- Ajouter une option `.env` `FONT_SOURCE=local|google|system` pour laisser le choix à l'hébergeur
+- Per-source time filters (ignore items older than N days).
+- Optional title-similarity deduplication.
+- Cache warmup/cron endpoint.
+- Admin CLI (`purge:cache`, `purge:inactive`, `stats`, `export:all`).
+- Log retention/rotation tooling (or `logrotate` config generator).
 
-### Sécurité réseau / SSRF & XXE
-**Priorité : haute — status : implémenté**
+### Low priority
 
-Un ensemble de protections contre les risques SSRF et XXE a été déployé dans la version 1.1.0 :
-- restrictions de schéma (`http`/`https` seulement), résolution DNS et blocage d'adresses privées/localhost, requêtes via `cURL` avec limites (1 MiB) et timeouts, et désactivation des entités externes XML.
+- Per-source status indicators (last success, HTTP code, items count).
+- Nested master feeds.
+- Webhook on new item publication.
+- Dark theming option.
+- Optional Dockerfile and compose setup.
 
-### Import JSON sécurisé — status : implémenté
+## FR
 
-Les imports JSON via l'interface web sont maintenant limités à 1 MiB et font l'objet d'une validation du type MIME pour réduire le risque d'attaques par déni de service par fichiers volumineux.
+Ce document suit uniquement les évolutions futures.
+Les éléments déjà livrés sont documentés uniquement dans `CHANGELOG.md`.
 
-Ces protections peuvent évoluer (support optionnel de listes blanches, journalisation plus fine, ou mode opérateur pour environnements contrôlés).
+### Priorité haute
 
-### Limitation de débit / Rate limiting
-**Priorité : haute — status : implémenté**
+- Auto-hébergement des polices (suppression des appels tiers à Google Fonts).
+- Limite d'items par source configurable.
+- Récupération parallèle des sources via `curl_multi_exec`.
 
-Une protection par rate-limiting simple a été ajoutée pour les endpoints sensibles (prévisualisation, création, import/export). Elle vise à réduire les abus et la charge serveur. Les compteurs sont stockés sous `var/rate/`.
+### Priorité moyenne
 
----
+- Filtres temporels par source (ignorer les items plus vieux que N jours).
+- Dédoublonnage optionnel par similarité de titre.
+- CLI d'administration (`purge:cache`, `purge:inactive`, `stats`, `export:all`).
 
-## ⚡ Performance
+### Priorité basse
 
-### Cache conditionnel avec ETag / Last-Modified
-**Priorité : haute — status : implémenté**
-
-Le support des requêtes conditionnelles (`If-None-Match` / `If-Modified-Since`) a été implémenté : les valeurs `etag` et `last_modified` sont maintenant conservées par source et utilisées lors des récupérations. Un script de migration idempotent (`bin/migrate_add_source_metadata.php`) permet d'ajouter les colonnes nécessaires aux bases existantes sans perte de données.
-
-### Écritures atomiques et verrouillage
-**Priorité : basse — status : implémenté**
-
-Les écritures du cache XML et des fichiers de log sont désormais réalisées de manière atomique (écriture dans un fichier temporaire puis `rename`) et via des verrous de fichier (`flock`) pour éviter la corruption de fichier lors d'accès concurrents.
-
-### Récupération des sources en parallèle
-**Priorité : moyenne**
-
-La récupération des sources d'un flux master est aujourd'hui séquentielle. Si une source est lente (timeout à 15s), elle bloque toutes les suivantes. Passer à un modèle de requêtes parallèles via `curl_multi_exec` réduirait significativement le temps de génération du flux sur des agrégateurs avec plusieurs dizaines de sources.
-
-### Page de statut des sources
-**Priorité : basse**
-
-Ajouter dans la page de gestion un indicateur visuel par source : dernière récupération réussie, code HTTP retourné, nombre d'items trouvés. Utile pour diagnostiquer rapidement une source morte ou qui a changé d'URL.
-
----
-
-## 🛠️ Fonctionnalités
-
-### Pagination / limite d'items par source
-**Priorité : haute**
-
-Permettre de configurer un nombre maximum d'items à conserver par source (ex. : "garder les 10 derniers articles de ce flux"). Évite qu'une source très prolifique noie les autres dans le flux fusionné.
-
-### Dédoublonnage cross-flux par titre
-**Priorité : moyenne**
-
-Le dédoublonnage actuel se fait sur l'URL exacte. Or un même article peut être repris sur plusieurs agrégateurs avec des URLs différentes mais des titres identiques. Ajouter une option de dédoublonnage par similarité de titre (hash normalisé : bas de casse, suppression de la ponctuation).
-
-### Filtres de date
-**Priorité : moyenne**
-
-Ajouter la possibilité d'exclure les articles plus anciens qu'une durée configurable par source (ex. : "ignorer les articles de plus de 7 jours"). Utile pour des sources qui republient leur archive ou agrègent du très vieux contenu.
-
-### Planification de la mise à jour du cache
-**Priorité : moyenne**
-
-Ajouter un endpoint `GET /cron/{token-admin}` appelable par un cron système pour pré-chauffer le cache de tous les flux actifs en dehors des requêtes des agrégateurs. Réduit la latence perçue par l'utilisateur final.
-
-### Flux master imbriqués
-**Priorité : basse**
-
-Permettre à un flux master d'inclure l'URL d'un autre flux master Sympli comme source. Ouvre la possibilité de construire des arbres de fusion : un flux "veille techno" qui agrège lui-même plusieurs flux thématiques.
-
-### Webhook à la publication d'un nouvel item
-**Priorité : basse**
-
-Option par flux : envoyer un POST HTTP vers une URL configurée dès qu'un nouvel item apparaît dans le flux fusionné. Permet d'intégrer Sympli avec des outils d'automatisation sans polling.
-
----
-
-## 🎨 Interface & expérience
-
-### Thème sombre
-**Priorité : basse**
-
-Ajouter un thème `dark.css` ou une bascule automatique `prefers-color-scheme: dark` dans les thèmes existants.
-
----
-
-## 🔧 Administration & déploiement
-
-### CLI d'administration
-**Priorité : moyenne**
-
-Un script `bin/console` avec quelques commandes utiles :
-- `purge:cache` — vide le cache fichier
-- `purge:inactive` — supprime les flux sans activité depuis N jours
-- `stats` — affiche le nombre de flux, sources, taille du cache
-- `export:all` — exporte tous les flux en JSON
-### Rotation et rétention des journaux
-**Priorité : moyenne — status : planifié**
-
-Ajouter un sous-ensemble d'outils/commandes pour gérer la rétention et la rotation des journaux applicatifs (`var/log/*`) :
-- option via `bin/console logs:rotate --size=50M --keep=7` pour rotation basée sur la taille et conservation N fichiers ;
-- ou intégration d'un helper pour générer une configuration `logrotate` recommandée pour les environnements Linux.
-
-Raison : le logger intégré écrit dans un seul fichier (voir `src/Support/Logger.php`) et ne réalise pas de rotation par défaut — laisser la flexibilité à l'opérateur tout en fournissant des outils pour faciliter la configuration.
-
-### Dockerfile optionnel en surcouche
-**Priorité : basse**
-
-Un `Dockerfile` minimal (PHP-FPM + Nginx ou Caddy) avec un `docker-compose.yml` pour faciliter le déploiement sur des environnements qui le permettent, sans forcer cette approche sur les hébergements mutualisés.
+- Indicateurs de statut par source (dernier succès, code HTTP, nombre d'items).
+- Flux master imbriqués.
+- Option de thème sombre.

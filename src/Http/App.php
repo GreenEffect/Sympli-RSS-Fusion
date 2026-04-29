@@ -245,7 +245,7 @@ final class App
         $localVersion = $this->getLocalVersionMarker();
 
         $remoteVersion = '';
-        if ($this->isEnabled($this->config['VERSION_CHECK_ENABLED'] ?? '0')) {
+        if ($this->isEnabled($this->config['VERSION_CHECK_ENABLED'] ?? '1')) {
             $remoteVersion = $this->fetchRemoteVersionMarker(self::VERSION_REMOTE_URL);
         }
 
@@ -1072,7 +1072,7 @@ final class App
             return $this->versionUpdateAvailable;
         }
 
-        if (!$this->isEnabled($this->config['VERSION_CHECK_ENABLED'] ?? '0')) {
+        if (!$this->isEnabled($this->config['VERSION_CHECK_ENABLED'] ?? '1')) {
             $this->versionUpdateAvailable = false;
             return false;
         }

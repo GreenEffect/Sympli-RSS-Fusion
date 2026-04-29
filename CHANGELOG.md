@@ -1,69 +1,111 @@
 # Changelog
 
-All notable changes to Sympli RSS Fusion will be documented in this file.
+## EN
 
-## [1.1.0] - 2026-04-29
+All notable changes to Sympli RSS Fusion are documented here.
 
-### Added
+### [1.1.0] - 2026-04-29
 
- - Refactored JavaScript from legacy DOM-0 style to modern ES6
- - Added ability to attach new secondary feeds to an existing primary feed during editing
- - Visual adjustments to footer links
- - Added a dedicated page for displaying configuration items
- - Display application version in the footer
- - Basic application logger: `src/Support/Logger.php` provides `log()`, `info()`, `warning()`, `error()` and `debug()` methods and writes to the file defined by `LOG_PATH` (default `var/log/app.log`). Writes are atomic and use `flock`. No automatic rotation is included — configure rotation externally (eg. `logrotate`).
+#### Added
 
- - Added support for conditional HTTP fetches using `ETag` / `If-Modified-Since`. Per-source metadata (`etag`, `last_modified`) are stored and used to perform conditional requests; a migration script `bin/migrate_add_source_metadata.php` is provided to add these columns on existing databases without data loss.
+- JavaScript modernization (legacy DOM-0 to ES6).
+- Ability to attach new secondary sources while editing an existing feed.
+- Dedicated page to display configuration items.
+- Application version displayed in footer.
+- Application logger (`src/Support/Logger.php`) with `info`, `warning`, `error`, `debug` levels (with the assistance of Claude Code)
+- Conditional HTTP requests support (`ETag` / `If-Modified-Since` - with the assistance of Claude Code) with idempotent migration script: `bin/migrate_add_source_metadata.php`.
 
-### Changed
+#### Changed
 
- - Bumped project version to `1.1.0` and added release notes.
+- Footer links visual adjustments.
+- Project version bumped to `1.1.0`.
 
-### Security
+#### Security
 
- - Validation for JSON import uploads: file size capped at 1 MiB and MIME/type checked to mitigate denial-of-service via oversized uploads.
- - Atomic writes and file locking for cache and log files (`CacheService.php`, `Logger.php`) to prevent corruption under concurrent access.
- - Simple server-side rate limiter for sensitive endpoints (`/preview-source`, `/create`, import/export and manage import/export). Counters stored under `var/rate/`; responses return HTTP 429 with `Retry-After` when limits are exceeded.
+- JSON import validation (MIME + 1 MiB limit).
+- Atomic writes and locking for cache/log files under concurrent access.
+- Server-side rate limiter on sensitive endpoints (`/preview-source`, `/create`, imports/exports) with HTTP 429 responses.
 
-## [1.0.0] - 2026-04-27
+### [1.0.0] - 2026-04-27
 
-### Added
+#### Added
 
 - FR/EN multilingual support through JSON files.
-- Configurable UI themes (`default`, `basic`, `dashboard`, `tiles`).
-- JSON import/export from `/manage` and the home page.
-- OPML import/export support for RSS source lists:
-	- `POST /import-master-opml`
-	- `GET /export-master-opml?token=...`
-	- `GET /manage/{token}/export-opml`
-	- `POST /manage/{token}/import-opml`
-- RSS source preview with black/star filtering rules.
-- Feed deletion from UI.
-- Optional auto-pruning for inactive feeds via `.env`.
-- Dev mode with detailed errors, logs, and dedicated DB.
-- Dedicated 404/500 error pages.
-- Personal data page.
-- Multilingual footer with institutional links.
-- Optional remote version check (GitHub `VERSION`) with "Update available" footer alert.
-- OPML parsing safeguards (size limit, URL validation, duplicate URL filtering).
-- Dynamic version badge in README header based on GitHub tags.
-- Apache front-controller routing via `public/.htaccess` for non-file requests.
-- First-install bootstrap now auto-detects the current domain/protocol and injects it into `APP_URL` in generated `.env`.
+- Configurable UI themes: `default`, `basic`, `dashboard`, `rssfusion`.
+- JSON import/export from home and manage pages.
+- OPML import/export for RSS source lists.
+- Source preview with filtering rules.
+- Manual feed deletion in UI.
+- Optional auto-pruning of inactive feeds.
+- `dev` mode (detailed errors, logs, dedicated DB).
+- Dedicated 404/500 pages and personal data page.
+- Optional remote version checks.
+- Apache front-controller routing via `public/.htaccess`.
+- First-run bootstrap (`.env` creation + SQLite schema setup).
 
-### Changed
+#### Changed
 
 - Rebranding to Sympli RSS Fusion.
-- Removed Composer references from the application.
-- README header enhanced with centered project logo and key badges (version, PHP minimum, license, status).
-- Installation and route documentation updated to include OPML endpoints.
-- Reverse-proxy installation behavior improved by honoring forwarded protocol when initializing `APP_URL`.
+- Removed Composer references.
+- Updated installation and route documentation.
 
-### Security
+#### Security
 
-- CSRF protection added on destructive and state-changing POST forms (create, update, import, delete).
- - SSRF / XXE mitigations for feed fetching and XML parsing:
-	 - only `http`/`https` schemes accepted;
-	 - hosts resolved and private/localhost addresses blocked (RFC1918, 127.0.0.0/8, IPv6 ULA/link-local);
-	 - feed fetches via `cURL` with timeouts and 1 MiB size cap;
-	 - external XML entities disabled (`LIBXML_NONET`, `libxml_disable_entity_loader`).
+- CSRF protection on sensitive POST operations.
+- SSRF/XXE mitigations for remote fetch and XML parsing.
+- External request timeout and payload size limits.
 
+## FR
+
+Toutes les évolutions notables de Sympli RSS Fusion sont documentées ici.
+
+### [1.1.0] - 2026-04-29
+
+#### Ajouts
+
+- Modernisation JavaScript (legacy DOM-0 vers ES6).
+- Possibilité d'ajouter de nouvelles sources secondaires pendant l'édition d'un flux.
+- Page dédiée d'affichage des éléments de configuration.
+- Affichage de la version applicative dans le footer.
+- Logger applicatif (`src/Support/Logger.php`) avec niveaux `info`, `warning`, `error`, `debug` (avec l'assistance de Claude Code)
+- Support des requêtes HTTP conditionnelles (`ETag` / `If-Modified-Since` - avec l'assistance de Claude Code) avec script de migration idempotent : `bin/migrate_add_source_metadata.php`.
+
+#### Changements
+
+- Ajustements visuels des liens du footer.
+- Version du projet passée à `1.1.0`.
+
+#### Sécurité
+
+- Validation des imports JSON (MIME + limite à 1 MiB).
+- Écritures atomiques et verrouillage pour cache/log en cas d'accès concurrents.
+- Rate limiting serveur sur endpoints sensibles (`/preview-source`, `/create`, imports/exports) avec réponses HTTP 429.
+
+### [1.0.0] - 2026-04-27
+
+#### Ajouts
+
+- Support multilingue FR/EN via JSON.
+- Thèmes UI configurables : `default`, `basic`, `dashboard`, `rssfusion`.
+- Imports/exports JSON depuis les pages d'entrée et de gestion.
+- Imports/exports OPML pour les listes de sources RSS.
+- Prévisualisation de source avec règles de filtrage.
+- Suppression manuelle de flux via l'UI.
+- Auto-pruning optionnel des flux inactifs.
+- Mode `dev` (erreurs détaillées, logs, base dédiée).
+- Pages dédiées 404/500 et page données personnelles.
+- Vérification distante de version en option.
+- Routage front-controller Apache via `public/.htaccess`.
+- Bootstrap de premier lancement (création `.env` + schéma SQLite).
+
+#### Changements
+
+- Rebranding vers Sympli RSS Fusion.
+- Suppression des références Composer.
+- Mise à jour de la documentation d'installation et des routes.
+
+#### Sécurité
+
+- Protection CSRF sur opérations POST sensibles.
+- Mitigations SSRF/XXE pour récupération distante et parsing XML.
+- Limites de timeout et de taille sur les requêtes externes.
