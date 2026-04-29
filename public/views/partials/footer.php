@@ -2,6 +2,7 @@
     <p>
         <?= htmlspecialchars($t('footer.brand')) ?> -
         <a href="https://www.rss-fusion.fr" target="_blank" rel="noopener noreferrer"><?= htmlspecialchars($t('footer.based_on')) ?></a> -
+        <a href="<?= htmlspecialchars($configurationUrl ?? '/configuration') ?>"><?= htmlspecialchars($t('footer.configuration')) ?></a> -
         <a href="<?= htmlspecialchars($privacyUrl) ?>"><?= htmlspecialchars($t('footer.privacy')) ?></a>
     </p>
     <p>

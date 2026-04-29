@@ -99,6 +99,11 @@ final class App
             return;
         }
 
+        if ($path === '/configuration' && $method === 'GET') {
+            $this->renderConfiguration();
+            return;
+        }
+
         if (preg_match('#^/manage/([a-f0-9]{48})/delete$#', $path, $m) === 1 && $method === 'POST') {
             $this->handleDelete($m[1]);
             return;
@@ -214,11 +219,38 @@ final class App
         $themeStylesheet = '/themes/' . $this->resolveTheme() . '.css';
         $t = fn (string $key, array $replacements = []): string => $this->translator->t($key, $replacements);
         $privacyUrl = '/privacy';
+        $configurationUrl = '/configuration';
         $versionUpdateAvailable = $this->isVersionUpdateAvailable();
         $versionRepoUrl = self::VERSION_REPO_URL;
         $localVersion = $this->getLocalVersionMarker();
 
         require __DIR__ . '/../../public/views/privacy.php';
+    }
+
+    private function renderConfiguration(): void
+    {
+        $appName = $this->config['APP_NAME'];
+        $lang = $this->translator->getLang();
+        $themeStylesheet = '/themes/' . $this->resolveTheme() . '.css';
+        $t = fn (string $key, array $replacements = []): string => $this->translator->t($key, $replacements);
+        $privacyUrl = '/privacy';
+        $configurationUrl = '/configuration';
+        $versionUpdateAvailable = $this->isVersionUpdateAvailable();
+        $versionRepoUrl = self::VERSION_REPO_URL;
+        $localVersion = $this->getLocalVersionMarker();
+
+        $remoteVersion = '';
+        if ($this->isEnabled($this->config['VERSION_CHECK_ENABLED'] ?? '0')) {
+            $remoteVersion = $this->fetchRemoteVersionMarker(self::VERSION_REMOTE_URL);
+        }
+
+        $langVal = $this->translator->getLang();
+        $themeName = $this->resolveTheme();
+        $cacheTtl = (int) ($this->config['CACHE_TTL'] ?? '0');
+        $autoPruneEnabled = $this->isEnabled($this->config['AUTO_PRUNE_ENABLED'] ?? '0');
+        $autoPruneDays = (int) ($this->config['AUTO_PRUNE_DAYS'] ?? '0');
+
+        require __DIR__ . '/../../public/views/configuration.php';
     }
 
     private function handleCreate(): void
