@@ -44,7 +44,24 @@ final class Logger
             $line .= ' ' . json_encode($context, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
         }
 
-        file_put_contents($path, $line . PHP_EOL, FILE_APPEND);
+        $handle = @fopen($path, 'a');
+        if ($handle === false) {
+            @file_put_contents($path, $line . PHP_EOL, FILE_APPEND);
+            return;
+        }
+
+        try {
+            if (flock($handle, LOCK_EX)) {
+                fwrite($handle, $line . PHP_EOL);
+                fflush($handle);
+                flock($handle, LOCK_UN);
+            } else {
+                fwrite($handle, $line . PHP_EOL);
+                fflush($handle);
+            }
+        } finally {
+            fclose($handle);
+        }
     }
 
     private function absolutePath(): string
