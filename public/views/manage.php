@@ -58,7 +58,7 @@ $pageTitle = $t('manage.page_title') . ' - ' . (string) $feed['title'];
                 <input type="file" name="import_opml_file" accept=".opml,text/x-opml,application/xml,text/xml" required>
                 <button type="submit" class="secondary"><?= htmlspecialchars($t('manage.import_opml_button')) ?></button>
             </form>
-            <form method="post" action="<?= htmlspecialchars($deleteUrl) ?>" onsubmit="return confirm('<?= htmlspecialchars($t('manage.delete_confirm')) ?>');">
+            <form method="post" action="<?= htmlspecialchars($deleteUrl) ?>" data-confirm="<?= htmlspecialchars($t('manage.delete_confirm')) ?>">
                 <input type="hidden" name="_csrf" value="<?= htmlspecialchars($csrfToken) ?>">
                 <button type="submit" class="danger"><?= htmlspecialchars($t('manage.delete')) ?></button>
             </form>
@@ -83,8 +83,8 @@ $pageTitle = $t('manage.page_title') . ' - ' . (string) $feed['title'];
                     <div class="source-header">
                         <h3><?= htmlspecialchars($t('ui.source')) ?> <span class="index"><?= $i + 1 ?></span></h3>
                         <div class="source-actions">
-                            <button type="button" class="secondary" onclick="previewSource(this)"><?= htmlspecialchars($t('source.preview')) ?></button>
-                            <button type="button" class="danger" onclick="removeSource(this)"><?= htmlspecialchars($t('source.remove')) ?></button>
+                            <button type="button" class="secondary" data-action="preview"><?= htmlspecialchars($t('source.preview')) ?></button>
+                            <button type="button" class="danger" data-action="remove"><?= htmlspecialchars($t('source.remove')) ?></button>
                         </div>
                     </div>
                     <div class="grid">
@@ -123,7 +123,7 @@ $pageTitle = $t('manage.page_title') . ' - ' . (string) $feed['title'];
                 </article>
             <?php endforeach; ?>
             </div>
-            <button type="button" class="secondary" onclick="addSource()"><?= htmlspecialchars($t('form.add_source')) ?></button>
+            <button type="button" class="secondary" data-action="add-source"><?= htmlspecialchars($t('form.add_source')) ?></button>
             <button type="submit"><?= htmlspecialchars($t('manage.save')) ?></button>
         </form>
     </section>
@@ -131,116 +131,16 @@ $pageTitle = $t('manage.page_title') . ' - ' . (string) $feed['title'];
     <?php require __DIR__ . '/partials/footer.php'; ?>
 </main>
 
-<script>
-const I18N = <?= $clientI18n ?: '{}' ?>;
+<script type="application/json" id="i18n-data"><?= $clientI18n ?: '{}' ?></script>
+<script type="module" src="/js/manage.js"></script>
 
-function t(key) {
-    return I18N[key] || key;
-}
-
-function escapeHtml(value) {
-    return String(value)
-        .replaceAll('&', '&amp;')
-        .replaceAll('<', '&lt;')
-        .replaceAll('>', '&gt;')
-        .replaceAll('"', '&quot;')
-        .replaceAll("'", '&#39;');
-}
-
-function toFlag(input) {
-    return input && input.checked ? '1' : '0';
-}
-
-function buildPreviewUrl(block, url) {
-    const params = new URLSearchParams();
-    params.set('url', url);
-
-    const blackWords = block.querySelector('input[name="black_words[]"]');
-    const starWords = block.querySelector('input[name="star_words[]"]');
-    params.set('black_words', blackWords ? blackWords.value : '');
-    params.set('star_words', starWords ? starWords.value : '');
-
-    params.set('black_target_title', toFlag(block.querySelector('input[name^="black_target_title["]')));
-    params.set('black_target_description', toFlag(block.querySelector('input[name^="black_target_description["]')));
-    params.set('black_target_content', toFlag(block.querySelector('input[name^="black_target_content["]')));
-    params.set('star_target_title', toFlag(block.querySelector('input[name^="star_target_title["]')));
-    params.set('star_target_description', toFlag(block.querySelector('input[name^="star_target_description["]')));
-    params.set('star_target_content', toFlag(block.querySelector('input[name^="star_target_content["]')));
-
-    return '/preview-source?' + params.toString();
-}
-
-async function previewSource(button) {
-    const block = button.closest('.source-block');
-    const urlInput = block.querySelector('input[name="source_url[]"]');
-    const box = block.querySelector('.preview-box');
-    const url = (urlInput.value || '').trim();
-
-    if (!url) {
-        box.hidden = false;
-        box.innerHTML = '<p>' + escapeHtml(t('error.invalid_url')) + '</p>';
-        return;
-    }
-
-    box.hidden = false;
-    box.innerHTML = '<p>' + escapeHtml(t('ui.preview_loading')) + '</p>';
-
-    try {
-        const response = await fetch(buildPreviewUrl(block, url));
-        const data = await response.json();
-
-        if (!response.ok || data.error) {
-            box.innerHTML = '<p>' + escapeHtml(data.error || t('ui.preview_error')) + '</p>';
-            return;
-        }
-
-        const header = data.feed_title
-            ? '<p><strong>' + escapeHtml(t('ui.preview_feed')) + '</strong> ' + escapeHtml(data.feed_title) + '</p>'
-            : '';
-
-        if (!Array.isArray(data.items) || data.items.length === 0) {
-            box.innerHTML = header + '<p>' + escapeHtml(t('ui.preview_empty')) + '</p>';
-            return;
-        }
-
-        const list = data.items.map((item) => {
-            const title = item.title ? escapeHtml(item.title) : escapeHtml(t('ui.preview_untitled_item'));
-            const link = item.link ? escapeHtml(item.link) : '#';
-            return '<li><a href="' + link + '" target="_blank" rel="noopener noreferrer">' + title + '</a></li>';
-        }).join('');
-
-        box.innerHTML = header + '<ul>' + list + '</ul>';
-    } catch (e) {
-        box.innerHTML = '<p>' + escapeHtml(t('ui.preview_error')) + '</p>';
-    }
-}
-
-const copyBtn = document.getElementById('copy-url-btn');
-const copyFeedback = document.getElementById('copy-url-feedback');
-const feedLink = document.getElementById('feed-url-link');
-
-copyBtn.addEventListener('click', async () => {
-    const text = feedLink ? feedLink.href : '';
-    if (!text) {
-        copyFeedback.textContent = t('manage.copy_failed');
-        return;
-    }
-
-    try {
-        await navigator.clipboard.writeText(text);
-        copyFeedback.textContent = t('manage.copy_done');
-    } catch (e) {
-        copyFeedback.textContent = t('manage.copy_failed');
-    }
-});
-</script>
 <template id="source-template">
     <article class="source-block">
         <div class="source-header">
             <h3><?= htmlspecialchars($t('ui.source')) ?> <span class="index"></span></h3>
             <div class="source-actions">
-                <button type="button" class="secondary" onclick="previewSource(this)"><?= htmlspecialchars($t('source.preview')) ?></button>
-                <button type="button" class="danger" onclick="removeSource(this)"><?= htmlspecialchars($t('source.remove')) ?></button>
+                <button type="button" class="secondary" data-action="preview"><?= htmlspecialchars($t('source.preview')) ?></button>
+                <button type="button" class="danger" data-action="remove"><?= htmlspecialchars($t('source.remove')) ?></button>
             </div>
         </div>
         <div class="grid">
@@ -279,37 +179,5 @@ copyBtn.addEventListener('click', async () => {
     </article>
 </template>
 
-<script>
-const sourcesRoot = document.getElementById('sources');
-const tpl = document.getElementById('source-template');
-
-function syncIndices() {
-    if (!sourcesRoot) return;
-    [...sourcesRoot.querySelectorAll('.source-block')].forEach((block, idx) => {
-        const indexEl = block.querySelector('.index');
-        if (indexEl) indexEl.textContent = idx + 1;
-        block.querySelectorAll('input[type="checkbox"]').forEach((input) => {
-            input.name = input.name.replace(/\[\d+\]/, '[' + idx + ']').replace('[index]', '[' + idx + ']');
-        });
-    });
-}
-
-function addSource() {
-    if (!tpl || !sourcesRoot) return;
-    const clone = tpl.content.cloneNode(true);
-    sourcesRoot.appendChild(clone);
-    syncIndices();
-}
-
-function removeSource(button) {
-    const article = button.closest('.source-block');
-    if (!article) return;
-    article.remove();
-    syncIndices();
-}
-
-// Ensure indices are correct on load
-syncIndices();
-</script>
 </body>
 </html>
