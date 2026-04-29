@@ -1,71 +1,59 @@
 # Contributing
 
-## FR
-
-Merci pour votre intérêt pour Sympli RSS Fusion.
-
-## Prérequis
-
-- PHP 8.1+
-- Serveur web (optionnel)
-
-## Démarrage local
-
-1. Copier `.env.example` vers `.env`.
-2. Lancer `php -S 127.0.0.1:8080 -t public`.
-3. Ouvrir `http://127.0.0.1:8080`.
-
-## Bonnes pratiques de contribution
-
-- Ouvrir une issue pour décrire le besoin (bug ou feature).
-- Proposer des modifications minimales et ciblées.
-- Respecter le style existant (PHP strict types, code clair, commentaires utiles).
-- Mettre à jour la documentation quand un comportement change.
-- Vérifier la syntaxe PHP avant soumission:
-
-```bash
-find . -name "*.php" -type f -print0 | xargs -0 -n1 php -l
-```
-
-## Pull Request
-
-- Expliquer le contexte et l'impact utilisateur.
-- Lister les routes/fichiers modifiés.
-- Ajouter une note de test manuel.
-- Si pertinent, ajouter des captures écran
-
----
-
 ## EN
 
-Thank you for your interest in Sympli RSS Fusion.
+Thanks for your interest in Sympli RSS Fusion.
 
 ### Prerequisites
 
 - PHP 8.1+
-- Web server (optional)
+- Local environment able to serve `public/`
 
-### Local run
+### Recommended workflow
 
-1. Copy `.env.example` to `.env`.
-2. Run `php -S 127.0.0.1:8080 -t public`.
-3. Open `http://127.0.0.1:8080`.
+1. Open an issue (bug, regression, or feature).
+2. Propose a minimal and focused change.
+3. Update documentation when behavior changes.
+4. Add manual test notes in the PR.
 
-### Contribution guidelines
-
-- Open an issue to describe the need (bug or feature).
-- Propose minimal, focused changes.
-- Keep current style (PHP strict types, clear code, useful comments).
-- Update documentation when behavior changes.
-- Check PHP syntax before submission:
+### Local check
 
 ```bash
 find . -name "*.php" -type f -print0 | xargs -0 -n1 php -l
 ```
 
-### Pull Request
+### Pull Request checklist
 
-- Explain context and user impact.
-- List changed routes/files.
-- Add manual test notes.
-- Add screenshots when relevant.
+- Clear context and user impact.
+- List of changed routes/files.
+- Manual verification steps.
+- Screenshots for UI changes.
+
+## FR
+
+Merci pour votre intérêt pour Sympli RSS Fusion.
+
+### Prérequis
+
+- PHP 8.1+
+- Environnement local capable de servir `public/`
+
+### Workflow recommandé
+
+1. Ouvrir une issue (bug, régression ou fonctionnalité).
+2. Proposer un changement minimal et ciblé.
+3. Mettre à jour la documentation si le comportement change.
+4. Ajouter des notes de test manuel dans la PR.
+
+### Vérification locale
+
+```bash
+find . -name "*.php" -type f -print0 | xargs -0 -n1 php -l
+```
+
+### Checklist Pull Request
+
+- Contexte et impact utilisateur clairs.
+- Liste des routes/fichiers modifiés.
+- Étapes de vérification manuelle.
+- Captures d'écran en cas de changement UI.

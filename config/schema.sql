@@ -22,6 +22,8 @@ CREATE TABLE IF NOT EXISTS sources (
     star_target_description INTEGER NOT NULL DEFAULT 1,
     star_target_content INTEGER NOT NULL DEFAULT 0,
     sort_order INTEGER NOT NULL DEFAULT 0,
+    etag TEXT DEFAULT '',
+    last_modified TEXT DEFAULT '',
     FOREIGN KEY(feed_id) REFERENCES feeds(id) ON DELETE CASCADE
 );
 

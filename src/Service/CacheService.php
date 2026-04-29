@@ -45,20 +45,61 @@ final class CacheService
             return null;
         }
 
-        $content = file_get_contents($path);
-        return $content === false ? null : $content;
+        $handle = @fopen($path, 'rb');
+        if ($handle === false) {
+            return null;
+        }
+
+        try {
+            if (!flock($handle, LOCK_SH)) {
+                fclose($handle);
+                return null;
+            }
+
+            $content = stream_get_contents($handle);
+            flock($handle, LOCK_UN);
+            fclose($handle);
+            return $content === false ? null : $content;
+        } finally {
+            if (is_resource($handle)) {
+                @fclose($handle);
+            }
+        }
     }
 
     public function put(string $token, string $xml): void
     {
-        file_put_contents($this->cachePath($token), $xml);
+        $path = $this->cachePath($token);
+        $dir = dirname($path);
+        if (!is_dir($dir)) {
+            mkdir($dir, 0777, true);
+        }
+
+        $tmp = tempnam($dir, 'cache_');
+        if ($tmp === false) {
+            // Fallback to direct write if tempnam fails
+            file_put_contents($path, $xml, LOCK_EX);
+            return;
+        }
+
+        $written = file_put_contents($tmp, $xml, LOCK_EX);
+        if ($written === false) {
+            @unlink($tmp);
+            return;
+        }
+
+        // Ensure permissions are reasonable
+        @chmod($tmp, 0666 & ~umask());
+
+        // Atomic replace
+        rename($tmp, $path);
     }
 
     public function invalidate(string $token): void
     {
         $path = $this->cachePath($token);
         if (is_file($path)) {
-            unlink($path);
+            @unlink($path);
         }
     }
 

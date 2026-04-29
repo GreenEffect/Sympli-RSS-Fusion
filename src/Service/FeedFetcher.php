@@ -35,18 +35,65 @@ final class FeedFetcher
     /**
      * @return array<int, array<string, mixed>>
      */
-    public function fetchItems(string $url): array
+    /**
+     * Fetch feed items supporting conditional requests.
+     *
+     * Returns an array with keys:
+     * - 'items' => array of items
+     * - 'etag' => string|null
+     * - 'last_modified' => string|null
+     * - 'not_modified' => bool
+     *
+     * @param string $url
+     * @param array<string,string> $conditional Optional associative array with 'etag' and/or 'last_modified'
+     * @return array<string, mixed>
+     */
+    public function fetchItems(string $url, array $conditional = []): array
     {
+        $headers = ['User-Agent: Sympli-RSS-Fusion/1.0'];
+        if (!empty($conditional['etag'])) {
+            $headers[] = 'If-None-Match: ' . $conditional['etag'];
+        }
+        if (!empty($conditional['last_modified'])) {
+            $headers[] = 'If-Modified-Since: ' . $conditional['last_modified'];
+        }
+
         $context = stream_context_create([
             'http' => [
                 'timeout' => $this->timeout,
-                'user_agent' => 'Sympli-RSS-Fusion/1.0',
+                'header' => implode("\r\n", $headers),
             ],
         ]);
 
         $xmlRaw = @file_get_contents($url, false, $context);
-        if ($xmlRaw === false || trim($xmlRaw) === '') {
-            return [];
+        // If file_get_contents returned false and there are response headers, try to detect 304
+        $responseHeaders = $http_response_header ?? [];
+        $status = null;
+        if (!empty($responseHeaders) && is_array($responseHeaders)) {
+            $m = [];
+            if (preg_match('#HTTP/\d\.?\d\s+(\d{3})#i', $responseHeaders[0], $m)) {
+                $status = (int) $m[1];
+            }
+        }
+
+        if ($xmlRaw === false || trim((string) $xmlRaw) === '') {
+            if ($status === 304) {
+                // Not modified
+                $etag = null;
+                $lastModified = null;
+                foreach ($responseHeaders as $h) {
+                    if (stripos($h, 'ETag:') === 0) {
+                        $etag = trim(substr($h, 5));
+                    }
+                    if (stripos($h, 'Last-Modified:') === 0) {
+                        $lastModified = trim(substr($h, 14));
+                    }
+                }
+
+                return ['items' => [], 'etag' => $etag, 'last_modified' => $lastModified, 'not_modified' => true];
+            }
+
+            return ['items' => [], 'etag' => null, 'last_modified' => null, 'not_modified' => false];
         }
 
         $dom = new DOMDocument();
@@ -59,16 +106,32 @@ final class FeedFetcher
         $xpath->registerNamespace('content', 'http://purl.org/rss/1.0/modules/content/');
 
         $items = $xpath->query('//channel/item');
+        $rows = [];
         if ($items !== false && $items->length > 0) {
-            return $this->parseRssItems($xpath);
+            $rows = $this->parseRssItems($xpath);
+        } else {
+            $entries = $xpath->query('//atom:feed/atom:entry');
+            if ($entries !== false && $entries->length > 0) {
+                $rows = $this->parseAtomEntries($xpath);
+            }
         }
 
-        $entries = $xpath->query('//atom:feed/atom:entry');
-        if ($entries !== false && $entries->length > 0) {
-            return $this->parseAtomEntries($xpath);
+        // extract response headers for etag/last-modified
+        $responseHeaders = $http_response_header ?? [];
+        $etag = null;
+        $lastModified = null;
+        if (!empty($responseHeaders) && is_array($responseHeaders)) {
+            foreach ($responseHeaders as $h) {
+                if (stripos($h, 'ETag:') === 0) {
+                    $etag = trim(substr($h, 5));
+                }
+                if (stripos($h, 'Last-Modified:') === 0) {
+                    $lastModified = trim(substr($h, 14));
+                }
+            }
         }
 
-        return [];
+        return ['items' => $rows, 'etag' => $etag, 'last_modified' => $lastModified, 'not_modified' => false];
     }
 
     /**
@@ -104,7 +167,8 @@ final class FeedFetcher
             $feedTitle = trim((string) $xpath->evaluate('string(//atom:feed/atom:title)'));
         }
 
-        $items = $this->fetchItems($url);
+        $res = $this->fetchItems($url);
+        $items = is_array($res) && isset($res['items']) ? $res['items'] : [];
 
         return [
             'feed_title' => $feedTitle,

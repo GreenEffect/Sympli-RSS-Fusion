@@ -256,7 +256,6 @@ button.danger {
 .footer-card a {
   color: #21407f;
   text-decoration: none;
-  font-weight: 600;
   border-bottom: 1px solid transparent;
   transition: color .15s ease, border-color .15s ease;
 }
@@ -269,7 +268,7 @@ button.danger {
 .footer-update-note {
   position: absolute;
   right: 1rem;
-  bottom: .62rem;
+  bottom: 1.78rem;
   font-size: .72rem;
   font-style: italic;
   opacity: .9;
@@ -277,6 +276,15 @@ button.danger {
 
 .footer-update-note a {
   font-weight: 500;
+}
+
+.footer-version-note {
+  position: absolute;
+  right: 1rem;
+  bottom: .56rem;
+  font-size: .7rem;
+  color: var(--ink-muted);
+  opacity: .86;
 }
 
 .error-card {
@@ -301,6 +309,12 @@ button.danger {
     position: static;
     display: block;
     margin-top: .45rem;
+    text-align: center;
+  }
+  .footer-version-note {
+    position: static;
+    display: block;
+    margin-top: .25rem;
     text-align: center;
   }
 }

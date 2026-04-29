@@ -3,3 +3,9 @@
 /var/data/*.sqlite
 /var/log/
 /var/log/*.log
+/var/rate/
+/var/cache/*
+/var/data/*.sqlite.backup*
+/var/data/*.backup.*
+/var/data/*.backup.*.sqlite
+/var/*.lock

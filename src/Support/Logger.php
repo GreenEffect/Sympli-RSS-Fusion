@@ -33,18 +33,55 @@ final class Logger
 
     public function error(string $message, array $context = []): void
     {
+        $this->log('ERROR', $message, $context);
+    }
+
+    public function log(string $level, string $message, array $context = []): void
+    {
         $path = $this->absolutePath();
         $dir = dirname($path);
         if (!is_dir($dir)) {
             mkdir($dir, 0777, true);
         }
 
-        $line = '[' . gmdate(DATE_ATOM) . '] ERROR ' . $message;
+        $line = '[' . gmdate(DATE_ATOM) . '] ' . strtoupper($level) . ' ' . $message;
         if ($context !== []) {
             $line .= ' ' . json_encode($context, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
         }
 
-        file_put_contents($path, $line . PHP_EOL, FILE_APPEND);
+        $handle = @fopen($path, 'a');
+        if ($handle === false) {
+            @file_put_contents($path, $line . PHP_EOL, FILE_APPEND);
+            return;
+        }
+
+        try {
+            if (flock($handle, LOCK_EX)) {
+                fwrite($handle, $line . PHP_EOL);
+                fflush($handle);
+                flock($handle, LOCK_UN);
+            } else {
+                fwrite($handle, $line . PHP_EOL);
+                fflush($handle);
+            }
+        } finally {
+            fclose($handle);
+        }
+    }
+
+    public function info(string $message, array $context = []): void
+    {
+        $this->log('INFO', $message, $context);
+    }
+
+    public function warning(string $message, array $context = []): void
+    {
+        $this->log('WARNING', $message, $context);
+    }
+
+    public function debug(string $message, array $context = []): void
+    {
+        $this->log('DEBUG', $message, $context);
     }
 
     private function absolutePath(): string

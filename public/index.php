@@ -118,7 +118,7 @@ $dbPath = $isDev
 $pdo = Database::connect($projectRoot, $dbPath);
 $repo = new FeedRepository($pdo);
 $fetcher = new FeedFetcher((int) $config['HTTP_TIMEOUT']);
-$aggregator = new FeedAggregator($fetcher, (int) $config['MAX_ITEMS']);
+$aggregator = new FeedAggregator($fetcher, (int) $config['MAX_ITEMS'], $repo);
 $cache = new CacheService($projectRoot . DIRECTORY_SEPARATOR . $config['CACHE_DIR'], (int) $config['CACHE_TTL']);
 $translator = new Translator($projectRoot, $config['APP_LANG'] ?? 'fr');
 

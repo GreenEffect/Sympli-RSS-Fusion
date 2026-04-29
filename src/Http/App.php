@@ -34,8 +34,10 @@ final class App
     private const VERSION_REMOTE_URL = 'https://raw.githubusercontent.com/GreenEffect/Sympli-RSS-Fusion/refs/heads/main/VERSION';
     private const VERSION_REPO_URL = 'https://github.com/GreenEffect/Sympli-RSS-Fusion';
     private const OPML_MAX_BYTES = 1048576;
+    private const JSON_MAX_BYTES = 1048576;
 
     private ?bool $versionUpdateAvailable = null;
+    private ?string $localVersionMarker = null;
 
     /**
      * @param array<string, string> $config
@@ -54,9 +56,13 @@ final class App
     public function run(): void
     {
         $this->autoPrune();
+        $this->purgeRateFiles();
 
         $path = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/';
         $method = strtoupper($_SERVER['REQUEST_METHOD'] ?? 'GET');
+
+        // Apply simple rate-limiting for sensitive endpoints
+        $this->enforceRateLimitIfNeeded($path, $method);
 
         if ($path === '/' && $method === 'GET') {
             $this->renderHome();
@@ -95,6 +101,11 @@ final class App
 
         if ($path === '/privacy' && $method === 'GET') {
             $this->renderPrivacy();
+            return;
+        }
+
+        if ($path === '/configuration' && $method === 'GET') {
+            $this->renderConfiguration();
             return;
         }
 
@@ -168,6 +179,7 @@ final class App
         $csrfToken = $this->getCsrfToken();
         $versionUpdateAvailable = $this->isVersionUpdateAvailable();
         $versionRepoUrl = self::VERSION_REPO_URL;
+        $localVersion = $this->getLocalVersionMarker();
 
         require __DIR__ . '/../../public/views/home.php';
     }
@@ -200,6 +212,7 @@ final class App
         $csrfToken = $this->getCsrfToken();
         $versionUpdateAvailable = $this->isVersionUpdateAvailable();
         $versionRepoUrl = self::VERSION_REPO_URL;
+        $localVersion = $this->getLocalVersionMarker();
 
         require __DIR__ . '/../../public/views/manage.php';
     }
@@ -211,10 +224,38 @@ final class App
         $themeStylesheet = '/themes/' . $this->resolveTheme() . '.css';
         $t = fn (string $key, array $replacements = []): string => $this->translator->t($key, $replacements);
         $privacyUrl = '/privacy';
+        $configurationUrl = '/configuration';
         $versionUpdateAvailable = $this->isVersionUpdateAvailable();
         $versionRepoUrl = self::VERSION_REPO_URL;
+        $localVersion = $this->getLocalVersionMarker();
 
         require __DIR__ . '/../../public/views/privacy.php';
+    }
+
+    private function renderConfiguration(): void
+    {
+        $appName = $this->config['APP_NAME'];
+        $lang = $this->translator->getLang();
+        $themeStylesheet = '/themes/' . $this->resolveTheme() . '.css';
+        $t = fn (string $key, array $replacements = []): string => $this->translator->t($key, $replacements);
+        $privacyUrl = '/privacy';
+        $configurationUrl = '/configuration';
+        $versionUpdateAvailable = $this->isVersionUpdateAvailable();
+        $versionRepoUrl = self::VERSION_REPO_URL;
+        $localVersion = $this->getLocalVersionMarker();
+
+        $remoteVersion = '';
+        if ($this->isEnabled($this->config['VERSION_CHECK_ENABLED'] ?? '1')) {
+            $remoteVersion = $this->fetchRemoteVersionMarker(self::VERSION_REMOTE_URL);
+        }
+
+        $langVal = $this->translator->getLang();
+        $themeName = $this->resolveTheme();
+        $cacheTtl = (int) ($this->config['CACHE_TTL'] ?? '0');
+        $autoPruneEnabled = $this->isEnabled($this->config['AUTO_PRUNE_ENABLED'] ?? '0');
+        $autoPruneDays = (int) ($this->config['AUTO_PRUNE_DAYS'] ?? '0');
+
+        require __DIR__ . '/../../public/views/configuration.php';
     }
 
     private function handleCreate(): void
@@ -600,6 +641,27 @@ final class App
             return null;
         }
 
+        if ((int) ($file['size'] ?? 0) > self::JSON_MAX_BYTES) {
+            $error = $this->translator->t('error.import_too_large');
+            return null;
+        }
+
+        $mime = '';
+        if (function_exists('finfo_open')) {
+            $finfo = finfo_open(FILEINFO_MIME_TYPE);
+            if ($finfo !== false) {
+                $mime = (string) finfo_file($finfo, $tmpPath);
+                finfo_close($finfo);
+            }
+        }
+
+        if ($mime !== '') {
+            $allowed = ['application/json', 'text/json', 'application/octet-stream', 'text/plain'];
+            if (!in_array(strtolower($mime), $allowed, true)) {
+                $error = $this->translator->t('error.import_invalid_json');
+                return null;
+            }
+        }
         $raw = file_get_contents($tmpPath);
         if ($raw === false || trim($raw) === '') {
             $error = $this->translator->t('error.import_invalid_json');
@@ -999,6 +1061,7 @@ final class App
         $privacyUrl = '/privacy';
         $versionUpdateAvailable = $this->isVersionUpdateAvailable();
         $versionRepoUrl = self::VERSION_REPO_URL;
+        $localVersion = $this->getLocalVersionMarker();
 
         require __DIR__ . '/../../public/views/errors/404.php';
     }
@@ -1009,7 +1072,7 @@ final class App
             return $this->versionUpdateAvailable;
         }
 
-        if (!$this->isEnabled($this->config['VERSION_CHECK_ENABLED'] ?? '0')) {
+        if (!$this->isEnabled($this->config['VERSION_CHECK_ENABLED'] ?? '1')) {
             $this->versionUpdateAvailable = false;
             return false;
         }
@@ -1042,6 +1105,16 @@ final class App
         }
 
         return $this->extractVersionLine($content);
+    }
+
+    private function getLocalVersionMarker(): string
+    {
+        if ($this->localVersionMarker !== null) {
+            return $this->localVersionMarker;
+        }
+
+        $this->localVersionMarker = $this->readVersionMarker($this->projectRoot . '/VERSION');
+        return $this->localVersionMarker;
     }
 
     private function fetchRemoteVersionMarker(string $url): string
@@ -1089,5 +1162,212 @@ final class App
         http_response_code($status);
         header('Content-Type: application/json; charset=utf-8');
         echo json_encode($payload, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+    }
+
+    private function enforceRateLimitIfNeeded(string $path, string $method): void
+    {
+        $rule = $this->getRateLimitRuleForPath($path, $method);
+        if ($rule === null) {
+            return;
+        }
+
+        $client = $this->getClientIdentifier();
+        $key = $rule['name'] . ':' . $client;
+        $limit = $rule['limit'];
+        $window = $rule['window'];
+
+        $remainingWindow = $this->incrementCounterAndGetRemaining($key, $limit, $window);
+        if ($remainingWindow < 0) {
+            $retryAfter = abs($remainingWindow);
+            header('Retry-After: ' . (int) $retryAfter);
+
+            $message = $this->translator->t('error.rate_limited', ['retry_after' => (int) $retryAfter]);
+
+            if ($path === '/preview-source') {
+                $this->json(['error' => $message], 429);
+                exit;
+            }
+
+            // For manage-related endpoints with token in path, try to render the manage page
+            if (preg_match('#^/manage/([a-f0-9]{48})#', $path, $m) === 1) {
+                $this->renderManage($m[1], $message);
+                exit;
+            }
+
+            // Fallback: render home with error
+            $this->renderHome($message);
+            exit;
+        }
+    }
+
+    /**
+     * Return rule or null
+     * @return array{name:string,limit:int,window:int}|null
+     */
+    private function getRateLimitRuleForPath(string $path, string $method): ?array
+    {
+        // POST endpoints that modify data
+        if ($path === '/create' && $method === 'POST') {
+            return ['name' => 'create', 'limit' => 10, 'window' => 60];
+        }
+
+        if (in_array($path, ['/import-master', '/import-master-opml'], true) && $method === 'POST') {
+            return ['name' => 'import_master', 'limit' => 5, 'window' => 60];
+        }
+
+        // preview (ajax)
+        if ($path === '/preview-source' && $method === 'GET') {
+            return ['name' => 'preview', 'limit' => 30, 'window' => 60];
+        }
+
+        // export endpoints
+        if (in_array($path, ['/export-master', '/export-master-opml'], true) && $method === 'GET') {
+            return ['name' => 'export_master', 'limit' => 30, 'window' => 60];
+        }
+
+        // manage/*/import and import-opml
+        if (preg_match('#^/manage/([a-f0-9]{48})/import#', $path) === 1 && $method === 'POST') {
+            return ['name' => 'manage_import', 'limit' => 5, 'window' => 60];
+        }
+
+        // manage/*/export
+        if (preg_match('#^/manage/([a-f0-9]{48})/(export|export-opml)$#', $path) === 1 && $method === 'GET') {
+            return ['name' => 'manage_export', 'limit' => 30, 'window' => 60];
+        }
+
+        return null;
+    }
+
+    private function getClientIdentifier(): string
+    {
+        $ip = '';
+        if (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+            $parts = explode(',', (string) $_SERVER['HTTP_X_FORWARDED_FOR']);
+            $ip = trim($parts[0]);
+        }
+        if ($ip === '' && !empty($_SERVER['REMOTE_ADDR'])) {
+            $ip = (string) $_SERVER['REMOTE_ADDR'];
+        }
+        if ($ip === '') {
+            $ip = 'unknown';
+        }
+
+        return $ip;
+    }
+
+    /**
+     * Increment the counter file and return remaining window seconds as positive int.
+     * If limit exceeded, return negative remaining seconds (i.e. -seconds_left).
+     */
+    private function incrementCounterAndGetRemaining(string $key, int $limit, int $window): int
+    {
+        $dir = $this->projectRoot . '/var/rate';
+        if (!is_dir($dir)) {
+            @mkdir($dir, 0775, true);
+        }
+
+        $file = $dir . '/' . sha1($key) . '.json';
+        $now = time();
+
+        $data = ['count' => 0, 'start' => $now];
+        $fp = @fopen($file, 'c+');
+        if ($fp === false) {
+            return $window; // can't persist -> allow to proceed
+        }
+
+        try {
+            if (!flock($fp, LOCK_EX)) {
+                fclose($fp);
+                return $window;
+            }
+
+            $stat = fstat($fp);
+            $contents = '';
+            if ($stat['size'] > 0) {
+                rewind($fp);
+                $contents = stream_get_contents($fp);
+            }
+
+            if ($contents !== '') {
+                $decoded = json_decode($contents, true);
+                if (is_array($decoded) && isset($decoded['count'], $decoded['start'])) {
+                    $data = $decoded;
+                }
+            }
+
+            if (($now - (int) $data['start']) >= $window) {
+                $data['count'] = 1;
+                $data['start'] = $now;
+            } else {
+                $data['count'] = (int) $data['count'] + 1;
+            }
+
+            // persist
+            ftruncate($fp, 0);
+            rewind($fp);
+            fwrite($fp, json_encode($data));
+            fflush($fp);
+            flock($fp, LOCK_UN);
+            fclose($fp);
+        } catch (\Throwable $e) {
+            @fclose($fp);
+            return $window;
+        }
+
+        if ($data['count'] > $limit) {
+            $elapsed = $now - (int) $data['start'];
+            $remaining = max(1, $window - $elapsed);
+            return -$remaining;
+        }
+
+        $elapsed = $now - (int) $data['start'];
+        $remaining = max(0, $window - $elapsed);
+        return $remaining;
+    }
+
+    /**
+     * Purge stale rate files under var/rate according to TTL and frequency settings.
+     */
+    private function purgeRateFiles(): void
+    {
+        $dir = $this->projectRoot . '/var/rate';
+        if (!is_dir($dir)) {
+            return;
+        }
+
+        $now = time();
+        $freq = max(60, (int) ($this->config['RATE_PURGE_FREQUENCY'] ?? '3600'));
+        $ttl = max(60, (int) ($this->config['RATE_FILE_TTL'] ?? '3600'));
+
+        $lastFile = $dir . '/.last_purge';
+        if (is_file($lastFile)) {
+            $last = (int) @file_get_contents($lastFile);
+            if ($now - $last < $freq) {
+                return;
+            }
+        }
+
+        try {
+            $it = new \DirectoryIterator($dir);
+            foreach ($it as $file) {
+                if (!$file->isFile()) {
+                    continue;
+                }
+
+                $name = $file->getFilename();
+                if ($name === '.last_purge') {
+                    continue;
+                }
+
+                $mtime = $file->getMTime();
+                if ($now - $mtime > $ttl) {
+                    @unlink($file->getPathname());
+                }
+            }
+        } catch (\Throwable $e) {
+            // ignore errors during purge
+        }
+
+        @file_put_contents($lastFile, (string) $now, LOCK_EX);
     }
 }
