@@ -2,6 +2,20 @@
 
 All notable changes to Sympli RSS Fusion will be documented in this file.
 
+## [1.1.0] - 2026-04-29
+
+### Added
+
+ - Refactored JavaScript from legacy DOM-0 style to modern ES6
+ - Added ability to attach new secondary feeds to an existing primary feed during editing
+ - Visual adjustments to footer links
+ - Added a dedicated page for displaying configuration items
+ - Display application version in the footer
+
+### Changed
+
+ - Bumped project version to `1.1.0` and added release notes.
+
 ## [1.0.0] - 2026-04-27
 
 ### Added
