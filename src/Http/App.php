@@ -36,6 +36,7 @@ final class App
     private const OPML_MAX_BYTES = 1048576;
 
     private ?bool $versionUpdateAvailable = null;
+    private ?string $localVersionMarker = null;
 
     /**
      * @param array<string, string> $config
@@ -168,6 +169,7 @@ final class App
         $csrfToken = $this->getCsrfToken();
         $versionUpdateAvailable = $this->isVersionUpdateAvailable();
         $versionRepoUrl = self::VERSION_REPO_URL;
+        $localVersion = $this->getLocalVersionMarker();
 
         require __DIR__ . '/../../public/views/home.php';
     }
@@ -200,6 +202,7 @@ final class App
         $csrfToken = $this->getCsrfToken();
         $versionUpdateAvailable = $this->isVersionUpdateAvailable();
         $versionRepoUrl = self::VERSION_REPO_URL;
+        $localVersion = $this->getLocalVersionMarker();
 
         require __DIR__ . '/../../public/views/manage.php';
     }
@@ -213,6 +216,7 @@ final class App
         $privacyUrl = '/privacy';
         $versionUpdateAvailable = $this->isVersionUpdateAvailable();
         $versionRepoUrl = self::VERSION_REPO_URL;
+        $localVersion = $this->getLocalVersionMarker();
 
         require __DIR__ . '/../../public/views/privacy.php';
     }
@@ -999,6 +1003,7 @@ final class App
         $privacyUrl = '/privacy';
         $versionUpdateAvailable = $this->isVersionUpdateAvailable();
         $versionRepoUrl = self::VERSION_REPO_URL;
+        $localVersion = $this->getLocalVersionMarker();
 
         require __DIR__ . '/../../public/views/errors/404.php';
     }
@@ -1042,6 +1047,16 @@ final class App
         }
 
         return $this->extractVersionLine($content);
+    }
+
+    private function getLocalVersionMarker(): string
+    {
+        if ($this->localVersionMarker !== null) {
+            return $this->localVersionMarker;
+        }
+
+        $this->localVersionMarker = $this->readVersionMarker($this->projectRoot . '/VERSION');
+        return $this->localVersionMarker;
     }
 
     private function fetchRemoteVersionMarker(string $url): string

@@ -17,4 +17,8 @@
             </a>
         </small>
     <?php endif; ?>
+
+    <?php if (!empty($localVersion)): ?>
+        <small class="footer-version-note">v<?= htmlspecialchars((string) $localVersion) ?></small>
+    <?php endif; ?>
 </footer>
