@@ -19,6 +19,7 @@ All notable changes to Sympli RSS Fusion will be documented in this file.
 ### Security
 
  - Validation for JSON import uploads: file size capped at 1 MiB and MIME/type checked to mitigate denial-of-service via oversized uploads.
+ - Atomic writes and file locking for cache and log files (`CacheService.php`, `Logger.php`) to prevent corruption under concurrent access.
 
 ## [1.0.0] - 2026-04-27
 

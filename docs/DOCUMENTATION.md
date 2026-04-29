@@ -139,6 +139,8 @@ Configure in `.env`:
   - After feed update/import/deletion.
   - After auto-prune.
 
+  Note: Cache and log writes use atomic write (temp file + rename) and file locking to avoid corruption under concurrent access.
+
 ---
 
 ## SQLite Database

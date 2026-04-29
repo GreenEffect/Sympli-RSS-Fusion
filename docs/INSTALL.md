@@ -35,6 +35,8 @@ Concrètement, ce choix évite d'exposer:
   - `var/cache`
   - `var/log`
 
+Note (FR): les écritures du cache et des journaux utilisent désormais une écriture atomique (fichier temporaire + renommage) et un verrouillage de fichier pour réduire les risques de corruption en cas d'accès concurrent.
+
 ### 2. Récupérer le projet
 
 ```bash
@@ -222,6 +224,8 @@ This prevents exposing:
   - `var/data`
   - `var/cache`
   - `var/log`
+
+Note (EN): cache and log writes now use atomic write (temp file + rename) and file locking to reduce the risk of corruption under concurrent access.
 
 ### 2. Clone repository
 

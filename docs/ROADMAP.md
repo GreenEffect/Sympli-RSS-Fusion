@@ -38,6 +38,11 @@ Ces protections peuvent évoluer (support optionnel de listes blanches, journali
 
 Actuellement le cache est binaire : valide ou expiré. Ajouter des en-têtes HTTP `ETag` et `Last-Modified` sur les endpoints `/feed/{token}` permettrait aux agrégateurs RSS de faire des requêtes conditionnelles (`If-None-Match`, `If-Modified-Since`) et d'économiser de la bande passante sans toucher au cache fichier.
 
+### Écritures atomiques et verrouillage
+**Priorité : basse — status : implémenté**
+
+Les écritures du cache XML et des fichiers de log sont désormais réalisées de manière atomique (écriture dans un fichier temporaire puis `rename`) et via des verrous de fichier (`flock`) pour éviter la corruption de fichier lors d'accès concurrents.
+
 ### Récupération des sources en parallèle
 **Priorité : moyenne**
 

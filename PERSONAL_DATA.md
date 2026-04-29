@@ -29,6 +29,8 @@ Sympli RSS Fusion est pensé pour minimiser la collecte de données.
 
  - Les fichiers JSON importés via l'interface sont également validés et limités à 1 MiB afin de réduire le risque d'attaques par déni de service via des téléversements volumineux.
 
+Les écritures des fichiers de cache et des journaux sont réalisées de façon atomique et via des verrous de fichier pour réduire le risque de corruption en cas d'accès concurrents.
+
 ## Hébergement
 
 Les données restent sur votre infrastructure (self-hosted), selon votre configuration serveur.
@@ -64,3 +66,5 @@ Data remains on your own infrastructure (self-hosted), depending on your server 
 ### Additional protections
 
 - Uploaded JSON import files are validated and capped at 1 MiB to reduce the risk of denial-of-service attacks through oversized uploads.
+
+Cache and log writes are performed atomically and use file locking to reduce the risk of corruption under concurrent access.
