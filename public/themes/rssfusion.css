@@ -297,7 +297,6 @@ button.danger {
 .footer-card a {
   color: var(--blue);
   text-decoration: none;
-  font-weight: 700;
   border-bottom: 1px solid transparent;
   transition: color .15s ease, border-color .15s ease;
 }
