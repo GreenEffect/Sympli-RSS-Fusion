@@ -263,6 +263,11 @@ Important values:
 - `DB_PATH=var/data/sympli_rss_fusion.sqlite`
 - `DB_PATH_DEV=var/data/sympli_rss_fusion_dev.sqlite`
 - `LOG_PATH=var/log/app.log`
+  
+Note sur les journaux / Log files:
+
+- FR: `LOG_PATH` permet de rediriger le fichier de logs. Le logger intégré est basique (écrit dans un seul fichier, verrouillage et écriture atomique) et ne gère pas la rotation. En production, configurez un mécanisme de rotation/rétention (ex. `logrotate`) pour éviter de remplir le disque.
+- EN: `LOG_PATH` points to the log file. The built-in logger is basic (single-file with flock and atomic writes) and does not implement rotation. Configure a rotation/retention mechanism (e.g. `logrotate`) in production to prevent disk exhaustion.
 - `VERSION_CHECK_ENABLED=0` (disabled by default)
   - set to `1` to enable remote version checks from GitHub.
 

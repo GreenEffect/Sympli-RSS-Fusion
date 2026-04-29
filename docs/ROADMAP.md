@@ -113,6 +113,14 @@ Un script `bin/console` avec quelques commandes utiles :
 - `purge:inactive` — supprime les flux sans activité depuis N jours
 - `stats` — affiche le nombre de flux, sources, taille du cache
 - `export:all` — exporte tous les flux en JSON
+### Rotation et rétention des journaux
+**Priorité : moyenne — status : planifié**
+
+Ajouter un sous-ensemble d'outils/commandes pour gérer la rétention et la rotation des journaux applicatifs (`var/log/*`) :
+- option via `bin/console logs:rotate --size=50M --keep=7` pour rotation basée sur la taille et conservation N fichiers ;
+- ou intégration d'un helper pour générer une configuration `logrotate` recommandée pour les environnements Linux.
+
+Raison : le logger intégré écrit dans un seul fichier (voir `src/Support/Logger.php`) et ne réalise pas de rotation par défaut — laisser la flexibilité à l'opérateur tout en fournissant des outils pour faciliter la configuration.
 
 ### Dockerfile optionnel en surcouche
 **Priorité : basse**

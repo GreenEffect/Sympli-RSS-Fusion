@@ -54,6 +54,8 @@ Ce choix protège automatiquement les fichiers sensibles hors web (`.env`, `var/
 	- les écritures du cache et des logs sont désormais atomiques (fichier temporaire + renommage) et utilisent un verrouillage de fichier pour éviter la corruption en cas d'accès concurrents.
 	- un mécanisme de limitation de débit (rate-limiter) protège désormais les endpoints sensibles (prévisualisation, création, import/export). Les compteurs sont stockés côté serveur dans `var/rate/` (fichiers hachés contenant `count` et `start`) et une réponse HTTP 429 est renvoyée quand la limite est dépassée.
 
+Note sur les journaux : le logger intégré écrit dans le fichier défini par `LOG_PATH` (par défaut `var/log/app.log`) et fournit des helpers `info()`, `warning()`, `error()` et `debug()`. Les écritures sont atomiques et protégées par `flock`, mais il n'y a pas de rotation automatique — configurez une rotation côté serveur (ex. `logrotate`) pour la rétention et éviter de remplir le disque.
+
 	Configuration optionnelle (via `.env`): `RATE_FILE_TTL` (seconds before rate file eligible for purge, default 3600) et `RATE_PURGE_FREQUENCY` (minimum seconds between purges, default 3600).
 
 ## 🚀 Installation rapide

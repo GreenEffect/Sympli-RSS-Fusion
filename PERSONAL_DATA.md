@@ -10,6 +10,8 @@ Sympli RSS Fusion est pensé pour minimiser la collecte de données.
 - Cache XML des flux agrégés.
 - Journaux techniques selon le mode d'exécution (`prod` ou `dev`).
 
+Les journaux peuvent contenir des informations techniques (messages d'erreur, traces d'exception, chemins de fichiers) et sont écrits à l'emplacement défini par `LOG_PATH` dans `.env` (par défaut `var/log/app.log`). Le projet réalise des écritures atomiques et utilise des verrous de fichier pour réduire les risques de corruption, mais la rotation/rétention des journaux n'est pas gérée automatiquement : il est recommandé de configurer un mécanisme de rotation (par ex. `logrotate`) côté hébergeur pour respecter votre politique de conservation des données.
+
 ## Ce qui n'est pas imposé
 
 - Aucun compte utilisateur.
@@ -51,6 +53,8 @@ Sympli RSS Fusion is designed to minimize data collection.
 - XML cache of aggregated feeds.
 - Technical logs depending on runtime mode (`prod` or `dev`).
 
+Logs may contain technical information (error messages, exception traces, file paths) and are written to the location defined by `LOG_PATH` in `.env` (default `var/log/app.log`). The project performs atomic writes and uses file locking to reduce the risk of corruption, but it does not implement automatic rotation/retention: configure a rotation/retention mechanism (e.g. `logrotate`) at the host level to meet your data retention policy.
+
 ### What is not required
 
 - No user account.
@@ -72,6 +76,8 @@ Data remains on your own infrastructure (self-hosted), depending on your server 
 - Uploaded JSON import files are validated and capped at 1 MiB to reduce the risk of denial-of-service attacks through oversized uploads.
 
 Cache and log writes are performed atomically and use file locking to reduce the risk of corruption under concurrent access.
+
+Note: logs may include technical details (error messages, traces). They are written to the file configured by `LOG_PATH` (default `var/log/app.log`). The application does not perform automatic log rotation — configure retention/rotation at the host level (e.g. `logrotate`) to meet your data retention and privacy policies.
 
 ### Rate limiting
 

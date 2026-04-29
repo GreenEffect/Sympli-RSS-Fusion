@@ -125,6 +125,12 @@ Configure in `.env`:
 - Logging of uncaught and fatal exceptions.
 - Dedicated SQLite database for development.
 
+## Journalisation / Logging
+
+- FR: Le projet fournit un logger basique (`RssFusionKiss\Support\Logger`) qui écrit dans un fichier unique configurable via la variable d'environnement `LOG_PATH` (par défaut `var/log/app.log`). Le logger expose `log($level, $message, $context)`, ainsi que des helpers `info()`, `warning()`, `error()` et `debug()`. Les écritures sont atomiques et protégées par `flock`, mais il n'y a pas de rotation automatique intégrée: la gestion de la rétention/rotation (par ex. `logrotate`) reste de la responsabilité de l'hébergeur.
+
+- EN: The project provides a basic logger (`RssFusionKiss\Support\Logger`) that writes to a single file configured via the `LOG_PATH` environment variable (default `var/log/app.log`). The logger exposes `log($level, $message, $context)` and helpers `info()`, `warning()`, `error()` and `debug()`. Writes are atomic and protected with `flock`, but there is no built-in rotation: retention/rotation (e.g. `logrotate`) must be configured by the operator.
+
 ---
 
 ## Auto-Pruning of Inactive Feeds

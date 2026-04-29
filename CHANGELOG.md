@@ -11,6 +11,7 @@ All notable changes to Sympli RSS Fusion will be documented in this file.
  - Visual adjustments to footer links
  - Added a dedicated page for displaying configuration items
  - Display application version in the footer
+ - Basic application logger: `src/Support/Logger.php` provides `log()`, `info()`, `warning()`, `error()` and `debug()` methods and writes to the file defined by `LOG_PATH` (default `var/log/app.log`). Writes are atomic and use `flock`. No automatic rotation is included — configure rotation externally (eg. `logrotate`).
 
 ### Changed
 
