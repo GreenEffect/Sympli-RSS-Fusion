@@ -25,8 +25,9 @@ Concrètement, ce choix évite d'exposer:
   - `dom` (DOMDocument / DOMXPath)
   - `libxml`
   - `json`
-- PHP setting required:
-  - `allow_url_fopen=1` (used to fetch RSS/Atom feeds and remote VERSION marker).
+- PHP setting / extensions required:
+  - `curl` extension (required for secure HTTP fetching of feeds)
+  - `allow_url_fopen` is no longer required for feed fetching (the application uses cURL internally)
 - HTTPS support for remote requests (OpenSSL enabled in PHP).
 - Write permissions on:
   - `var/data`
@@ -162,7 +163,8 @@ Si vous avez déjà un serveur web opérationnel, le chemin le plus simple est:
 - Erreur SQLite (fichier inaccessible):
   - vérifier les droits sur `var/data` et la valeur de `DB_PATH`.
 - Impossible de récupérer les flux externes:
-  - vérifier internet sortant, DNS, SSL, et `allow_url_fopen=1`.
+  - vérifier internet sortant, DNS, SSL, et l'extension `curl` de PHP.
+  - note: l'application effectue des contrôles supplémentaires (schéma http(s), résolution DNS et filtrage d'adresses privées) ; si une URL est refusée elle peut être bloquée pour des raisons de sécurité.
 - Vérification de version inactive:
   - vérifier `VERSION_CHECK_ENABLED=1` dans `.env`.
 

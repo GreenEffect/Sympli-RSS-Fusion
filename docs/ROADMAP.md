@@ -17,6 +17,14 @@ Solutions envisagées :
 - Mettre à jour les `@font-face` dans chaque thème pour pointer vers les fichiers locaux
 - Ajouter une option `.env` `FONT_SOURCE=local|google|system` pour laisser le choix à l'hébergeur
 
+### Sécurité réseau / SSRF & XXE
+**Priorité : haute — status : implémenté**
+
+Un ensemble de protections contre les risques SSRF et XXE a été déployé dans la version 1.1.0 :
+- restrictions de schéma (`http`/`https` seulement), résolution DNS et blocage d'adresses privées/localhost, requêtes via `cURL` avec limites (1 MiB) et timeouts, et désactivation des entités externes XML.
+
+Ces protections peuvent évoluer (support optionnel de listes blanches, journalisation plus fine, ou mode opérateur pour environnements contrôlés).
+
 ---
 
 ## ⚡ Performance

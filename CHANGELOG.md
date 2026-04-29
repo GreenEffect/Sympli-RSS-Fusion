@@ -52,3 +52,8 @@ All notable changes to Sympli RSS Fusion will be documented in this file.
 ### Security
 
 - CSRF protection added on destructive and state-changing POST forms (create, update, import, delete).
+ - SSRF / XXE mitigations for feed fetching and XML parsing:
+	 - only `http`/`https` schemes accepted;
+	 - hosts resolved and private/localhost addresses blocked (RFC1918, 127.0.0.0/8, IPv6 ULA/link-local);
+	 - feed fetches via `cURL` with timeouts and 1 MiB size cap;
+	 - external XML entities disabled (`LIBXML_NONET`, `libxml_disable_entity_loader`).

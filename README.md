@@ -46,6 +46,10 @@ Ce choix protège automatiquement les fichiers sensibles hors web (`.env`, `var/
 - Mode `dev` (erreurs détaillées, logs, DB dédiée).
 - Pages d'erreur 404/500 + page Données personnelles.
 - Vérification optionnelle de version distante avec alerte de mise à jour dans le footer.
+- Protections de sécurité lors de la récupération des flux externes :
+	- seules les URLs `http`/`https` sont acceptées;
+	- résolution DNS + blocage d'adresses privées/localhost pour prévenir SSRF;
+	- parsing XML avec entités externes désactivées pour prévenir XXE.
 
 ## 🚀 Installation rapide
 
@@ -145,6 +149,12 @@ This protects sensitive files from direct web access (`.env`, SQLite data in `va
 - `dev` mode (detailed errors, logs, dedicated DB).
 - Dedicated 404/500 pages + Personal data page.
 - Optional remote version check with footer alert.
+- Security
+
+- External feed fetching is hardened to mitigate SSRF and XXE risks:
+	- only `http`/`https` URLs are accepted;
+	- hosts are resolved and private/localhost addresses are blocked;
+	- XML parsing disables external entities to avoid XXE.
 
 ### 🚀 Quick install
 

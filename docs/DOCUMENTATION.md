@@ -31,6 +31,21 @@ The web root **must** target `public/` to prevent HTTP exposure of sensitive fil
 
 ---
 
+## 🔐 Sécurité des récupérations externes / External fetch security
+
+- FR: Depuis la version 1.1.0 l'application renforce la sécurité lors de la récupération et du parsing des flux externes pour prévenir les attaques SSRF et XXE. Concrètement :
+  - seules les URLs en `http` ou `https` sont autorisées ;
+  - les hôtes sont résolus (A/AAAA) et les adresses privées / `localhost` / link-local / ULA IPv6 sont bloquées ;
+  - les requêtes HTTP sont effectuées via `cURL` avec timeouts et limite de taille (1 MiB) ;
+  - le parser XML désactive explicitement la résolution des entités externes (`LIBXML_NONET`, `libxml_disable_entity_loader`) pour prévenir les XXE.
+
+- EN: Since 1.1.0 the application hardens external feed fetching and XML parsing to mitigate SSRF and XXE risks:
+  - only `http` and `https` URLs are accepted;
+  - hosts are resolved (A/AAAA) and private addresses / `localhost` / link-local / IPv6 ULA ranges are blocked;
+  - HTTP fetches use `cURL` with timeouts and a size cap (1 MiB);
+  - XML parsing disables external entity resolution (`LIBXML_NONET`, `libxml_disable_entity_loader`).
+
+
 ## 🛣️ Routes
    Method | Route | Description |
  |--------|-------|-------------|

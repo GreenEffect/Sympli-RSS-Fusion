@@ -22,6 +22,11 @@ Sympli RSS Fusion est pensé pour minimiser la collecte de données.
 - Purge automatique optionnelle des flux inactifs.
 - Suppression locale des fichiers SQLite/cache/logs par l'hébergeur.
 
+### Protection complémentaire
+
+- L'application met en œuvre des contrôles lors de la récupération de flux externes pour éviter l'accès non intentionnel à des ressources internes (SSRF). Seuls les schémas `http`/`https` sont autorisés, et les adresses privées/localhost sont bloquées après résolution DNS.
+- Les entités externes dans les documents XML sont désactivées pour prévenir les fuites via XXE.
+
 ## Hébergement
 
 Les données restent sur votre infrastructure (self-hosted), selon votre configuration serveur.
